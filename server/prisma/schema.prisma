@@ -1,0 +1,173 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String           @id @default(uuid())
+  email        String           @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  documents    Document[]
+  questions    QuestionAnswer[]
+  comparisons  Comparison[]
+  actionItems  ActionItem[]
+  auditLogs    AuditLog[]
+}
+
+model Document {
+  id               String            @id @default(uuid())
+  userId           String
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title            String
+  originalFilename String
+  mimeType         String
+  fileSize         Int
+  filePath         String
+  pageCount        Int               @default(1)
+  status           String            @default("PENDING") // PENDING, PROCESSING, ANALYZED, ERROR
+  errorMessage     String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  sections         DocumentSection[]
+  clauses          DocumentClause[]
+  analysis         Analysis?
+  findings         Finding[]
+  questions        QuestionAnswer[]
+  actionItems      ActionItem[]
+
+  @@index([userId])
+}
+
+model DocumentSection {
+  id         String           @id @default(uuid())
+  documentId String
+  document   Document         @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  title      String
+  orderIndex Int
+  createdAt  DateTime         @default(now())
+  clauses    DocumentClause[]
+
+  @@index([documentId])
+}
+
+model DocumentClause {
+  id          String          @id @default(uuid())
+  documentId  String
+  document    Document        @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  sectionId   String
+  section     DocumentSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  number      String
+  title       String
+  text        String
+  page        Int             @default(1)
+  startOffset Int             @default(0)
+  endOffset   Int             @default(0)
+  createdAt   DateTime        @default(now())
+  findings    Finding[]
+
+  @@index([documentId])
+  @@index([sectionId])
+}
+
+model Analysis {
+  id              String    @id @default(uuid())
+  documentId      String    @unique
+  document        Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  summary         String
+  documentType    String
+  missingInfoJson String    @default("[]") // JSON string array
+  createdAt       DateTime  @default(now())
+  findings        Finding[]
+}
+
+model Finding {
+  id             String          @id @default(uuid())
+  analysisId     String
+  analysis       Analysis        @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  documentId     String
+  document       Document        @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  sourceClauseId String
+  sourceClause   DocumentClause? @relation(fields: [sourceClauseId], references: [id], onDelete: Cascade)
+  category       String // importantClauses, obligations, deadlines, monetaryTerms, terminationTerms, renewalTerms, potentialConcerns
+  severity       String // Informational, Review, Important
+  title          String
+  explanation    String
+  whyItMatters   String
+  pageNumber     Int             @default(1)
+  confidence     Float           @default(0.9)
+  createdAt      DateTime        @default(now())
+
+  @@index([documentId])
+  @@index([analysisId])
+  @@index([sourceClauseId])
+}
+
+model QuestionAnswer {
+  id                  String   @id @default(uuid())
+  documentId          String
+  document            Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  userId              String
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionText        String
+  answerText          String
+  confidence          Float    @default(0.9)
+  sourceClauseIdsJson String   @default("[]") // JSON string array
+  pageNumber          Int?
+  isDeclinedAdvice    Boolean  @default(false)
+  createdAt           DateTime @default(now())
+
+  @@index([documentId])
+  @@index([userId])
+}
+
+model Comparison {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  docAId          String
+  docBId          String
+  title           String
+  diffRecordsJson String // JSON array of ComparisonRecord
+  summary         String
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
+}
+
+model ActionItem {
+  id             String   @id @default(uuid())
+  documentId     String
+  document       Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category       String
+  title          String
+  description    String
+  isCompleted    Boolean  @default(false)
+  sourceClauseId String?
+  priority       String   @default("Medium") // High, Medium, Low
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([documentId])
+  @@index([userId])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  details   String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
