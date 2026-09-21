@@ -2,14 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  body {
-    @apply bg-brand-midnight text-brand-warmwhite font-sans antialiased selection:bg-brand-gold selection:text-brand-midnight;
-  }
+body {
+  background-color: #011826;
+  color: #F2F2F2;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-  h1, h2, h3, .font-serif, .font-headline {
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  }
+::selection {
+  background-color: rgba(166, 122, 83, 0.4);
+  color: #F2F2F2;
+}
+
+h1, h2, h3, .font-serif, .font-headline {
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
 /* Custom scrollbars */
