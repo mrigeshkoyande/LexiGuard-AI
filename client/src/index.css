@@ -4,7 +4,11 @@
 
 @layer base {
   body {
-    @apply bg-slate-950 text-slate-100 font-sans antialiased selection:bg-cyan-500 selection:text-white;
+    @apply bg-brand-midnight text-brand-warmwhite font-sans antialiased selection:bg-brand-gold selection:text-brand-midnight;
+  }
+
+  h1, h2, h3, .font-serif, .font-headline {
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 }
 
@@ -14,21 +18,59 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(1, 24, 38, 0.7);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(51, 65, 85, 0.8);
+  background: rgba(166, 122, 83, 0.35);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 1);
+  background: rgba(196, 154, 108, 0.7);
 }
 
-/* Print Styles for Action Brief */
+/* Active clause glowing animation */
+.clause-active-pulse {
+  animation: clausePulse 2.4s ease-in-out infinite;
+}
+
+@keyframes clausePulse {
+  0%, 100% {
+    background-color: rgba(166, 122, 83, 0.12);
+    border-color: rgba(166, 122, 83, 0.85);
+    box-shadow: 0 0 20px rgba(166, 122, 83, 0.25);
+  }
+  50% {
+    background-color: rgba(166, 122, 83, 0.24);
+    border-color: rgba(196, 154, 108, 1);
+    box-shadow: 0 0 30px rgba(166, 122, 83, 0.4);
+  }
+}
+
+/* Thin luxury gold divider */
+.gold-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(166, 122, 83, 0.4), transparent);
+}
+
+/* Glassmorphism panel base */
+.glass-panel {
+  background: rgba(7, 31, 48, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(166, 122, 83, 0.2);
+}
+
+.cream-card {
+  background: #F7F3EC;
+  color: #121414;
+  border: 1px solid rgba(166, 122, 83, 0.25);
+}
+
+/* Print Styles for Action Brief and Lawyer Prep */
 @media print {
   body {
     background: white !important;
-    color: black !important;
+    color: #1a1a1a !important;
   }
   .no-print {
     display: none !important;
@@ -37,7 +79,9 @@
     display: block !important;
   }
   .print-card {
-    border: 1px solid #cbd5e1 !important;
+    border: 1px solid #d1d5db !important;
+    background: white !important;
+    color: black !important;
     box-shadow: none !important;
     page-break-inside: avoid;
   }
