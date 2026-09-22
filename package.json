@@ -20,7 +20,11 @@
     "test": "npm --workspace=server run test",
     "seed": "npm --workspace=server run seed",
     "typecheck": "npm --workspace=shared run typecheck && npm --workspace=server run typecheck && npm --workspace=client run typecheck",
-    "lint": "echo \"Lint check passed\""
+    "lint": "echo \"Lint check passed\"",
+    "docker:build": "docker build -t lexiguard-ai:latest .",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
