@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './components/ui/Toast';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/layout/Footer';
 import { UploadModal } from './components/UploadModal';
 import { CommandPalette } from './components/ui/CommandPalette';
-import { DisclaimerBanner } from './components/DisclaimerBanner';
+import { NotificationDrawer } from './components/NotificationDrawer';
 
 // Pages
 import { LandingPage } from './pages/LandingPage';
@@ -57,6 +58,7 @@ const AppContent: React.FC = () => {
   const [activeDocId, setActiveDocId] = useState<string | null>(null);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
   // Auto-redirect authenticated user on initial load
   useEffect(() => {
@@ -101,9 +103,11 @@ const AppContent: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-lexi-gold gap-4">
-        <div className="w-10 h-10 border-2 border-lexi-gold border-t-transparent rounded-full animate-spin" />
-        <span className="font-serif italic text-xs tracking-widest text-slate-400">INITIALIZING LEXIGUARD SECURE VAULT...</span>
+      <div className="min-h-screen bg-brand-cream dark:bg-slate-950 flex flex-col items-center justify-center text-brand-gold gap-4">
+        <div className="w-10 h-10 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />
+        <span className="font-serif italic text-xs tracking-widest text-slate-600 dark:text-slate-400">
+          INITIALIZING LEXIGUARD SECURE VAULT...
+        </span>
       </div>
     );
   }
@@ -112,15 +116,15 @@ const AppContent: React.FC = () => {
   const isFullWorkspace = currentView === 'workspace';
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-lexi-gold/30 selection:text-amber-200">
+    <div className="min-h-screen bg-brand-cream dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col selection:bg-brand-gold/30 selection:text-brand-gold-dark dark:selection:text-amber-200 transition-colors duration-200">
       <Navbar
         currentView={currentView}
         onNavigate={handleNavigate}
         onOpenUpload={() => setIsUploadOpen(true)}
         onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+        onOpenNotifications={() => setIsNotificationOpen(true)}
+        unreadCount={3}
       />
-
-      <DisclaimerBanner />
 
       <main className="flex-1 flex flex-col">
         {currentView === 'landing' && (
@@ -216,7 +220,7 @@ const AppContent: React.FC = () => {
 
       {!isFullWorkspace && <Footer onNavigate={handleNavigate} />}
 
-      {/* Global Modals */}
+      {/* Global Modals & Drawers */}
       <UploadModal
         isOpen={isUploadOpen}
         onClose={() => setIsUploadOpen(false)}
@@ -229,17 +233,25 @@ const AppContent: React.FC = () => {
         onNavigate={handleNavigate}
         onOpenUpload={() => setIsUploadOpen(false)}
       />
+
+      <NotificationDrawer
+        isOpen={isNotificationOpen}
+        onClose={() => setIsNotificationOpen(false)}
+        onNavigate={handleNavigate}
+      />
     </div>
   );
 };
 
 export function App() {
   return (
-    <AuthProvider>
-      <ToastProvider>
-        <AppContent />
-      </ToastProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <AppContent />
+        </ToastProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
