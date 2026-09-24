@@ -9,7 +9,6 @@
     "client"
   ],
   "scripts": {
-    "postinstall": "npm --workspace=shared run build",
     "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,green\" \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "npm --workspace=server run dev",
     "dev:client": "npm --workspace=client run dev",
