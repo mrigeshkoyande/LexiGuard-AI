@@ -11,7 +11,7 @@
     }
   },
   "scripts": {
-    "build": "tsc || true",
+    "build": "tsc",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
