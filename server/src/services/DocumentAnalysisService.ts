@@ -1,5 +1,5 @@
 import prisma from '../db/prisma';
-import { AnalysisResult, DocumentStructure, FindingItem } from '@lexiguard/shared';
+import { AnalysisResult, DocumentStructure } from '@lexiguard/shared';
 import { getAIProvider } from '../ai';
 
 export class DocumentAnalysisService {
@@ -117,7 +117,7 @@ export class DocumentAnalysisService {
     });
 
     // Obligations
-    analysis.obligations.slice(0, 3).forEach((ob: FindingItem) => {
+    analysis.obligations.slice(0, 3).forEach((ob) => {
       items.push({
         category: 'Important Obligations',
         title: `Confirm Operational Feasibility: ${ob.title}`,
@@ -128,7 +128,7 @@ export class DocumentAnalysisService {
     });
 
     // Deadlines
-    analysis.deadlines.slice(0, 3).forEach((dl: FindingItem) => {
+    analysis.deadlines.slice(0, 3).forEach((dl) => {
       items.push({
         category: 'Important Dates',
         title: `Calendar Notice Window: ${dl.title}`,
@@ -139,7 +139,7 @@ export class DocumentAnalysisService {
     });
 
     // Financial
-    analysis.monetaryTerms.slice(0, 2).forEach((mt: FindingItem) => {
+    analysis.monetaryTerms.slice(0, 2).forEach((mt) => {
       items.push({
         category: 'Financial Terms',
         title: `Validate Payment Terms: ${mt.title}`,
@@ -150,7 +150,7 @@ export class DocumentAnalysisService {
     });
 
     // Review Areas
-    analysis.potentialConcerns.slice(0, 3).forEach((pc: FindingItem) => {
+    analysis.potentialConcerns.slice(0, 3).forEach((pc) => {
       items.push({
         category: 'Review Areas',
         title: `Assess Risk Exposure: ${pc.title}`,
@@ -169,7 +169,7 @@ export class DocumentAnalysisService {
     });
 
     // Questions for a Lawyer
-    if (analysis.potentialConcerns.some((c: FindingItem) => c.severity === 'Important')) {
+    if (analysis.potentialConcerns.some((c) => c.severity === 'Important')) {
       items.push({
         category: 'Questions for a Lawyer',
         title: 'Review non-compete/IP scope under local jurisdiction laws',

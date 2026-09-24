@@ -280,14 +280,14 @@ export class MockAIProvider implements AIProvider {
             `The document contains differing terms across these clauses.`
         ),
         status: 'CONTRADICTORY_EVIDENCE',
-        sources: contextClauses.map((c: DocumentClause) => ({
+        sources: contextClauses.map((c) => ({
           sourceClauseId: c.id,
           page: c.page || 1,
           excerpt: c.text.slice(0, 180),
           clauseTitle: c.title,
           clauseNumber: c.number
         })),
-        sourceClauseIds: contextClauses.map((c: DocumentClause) => c.id),
+        sourceClauseIds: contextClauses.map((c) => c.id),
         confidence: 0.88,
         limitation: 'The document contains conflicting provisions on this topic.',
         nextStep: 'Consider clarifying which clause governs with the other party or a qualified attorney.'
