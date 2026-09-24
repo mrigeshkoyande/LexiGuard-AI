@@ -47,6 +47,13 @@ export interface DocumentStructure {
 }
 
 // ============================================================================
+// ============================================================================
+// Evidence Support States (Hallucination Prevention)
+// ============================================================================
+export const SupportStatusEnum = z.enum(['SUPPORTED', 'PARTIALLY SUPPORTED', 'INSUFFICIENT EVIDENCE']);
+export type SupportStatus = z.infer<typeof SupportStatusEnum>;
+
+// ============================================================================
 // AI Finding Item Schema
 // ============================================================================
 export const FindingItemSchema = z.object({
@@ -58,7 +65,8 @@ export const FindingItemSchema = z.object({
   whyItMatters: z.string(),
   sourceClauseId: z.string(),
   pageNumber: z.number().int().min(1),
-  confidence: z.number().min(0).max(1).default(0.9)
+  confidence: z.number().min(0).max(1).default(0.9),
+  supportStatus: SupportStatusEnum.default('SUPPORTED')
 });
 
 export type FindingItem = z.infer<typeof FindingItemSchema>;
@@ -95,6 +103,7 @@ export interface QuestionResponse {
   sourceClauseIds: string[];
   pageNumber?: number;
   confidence: number;
+  supportStatus?: SupportStatus;
   isDeclinedAdvice: boolean;
   matchedClauses?: {
     id: string;
