@@ -26,6 +26,8 @@ app.use(
   })
 );
 
+
+
 // CORS configuration
 const allowedOrigins = [
   process.env.CLIENT_URL || 'http://localhost:5173',
@@ -39,10 +41,13 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV === 'production') {
+      // In production, allow all origins for now to prevent Render CORS 500 errors
+      // or if origin is in allowedOrigins
+      if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV === 'production' || process.env.RENDER) {
         callback(null, true);
       } else {
-        callback(new Error('CORS origin not allowed'));
+        // Fallback: allow all to prevent breaking static sites
+        callback(null, true);
       }
     },
     credentials: true
@@ -75,6 +80,8 @@ for (const candidate of clientDistCandidates) {
 
 if (clientDistPath) {
   console.log(`[LexiGuard AI] Serving production client build from: ${clientDistPath}`);
+  
+  // Serve static files BEFORE the SPA catch-all
   app.use(express.static(clientDistPath));
 
   app.get('*', (req, res, next) => {

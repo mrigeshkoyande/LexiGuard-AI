@@ -1,0 +1,15 @@
+name: Keep Render Alive
+
+on:
+  schedule:
+    # Run every 10 minutes
+    - cron: '*/10 * * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  ping-render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping LexiGuard-AI Render URL
+        run: |
+          curl -f https://lexiguard-z6d5.onrender.com/health || echo "Failed to ping, but workflow continues."
