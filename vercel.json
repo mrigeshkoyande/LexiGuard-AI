@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "installCommand": "npm install --legacy-peer-deps",
   "buildCommand": "npm --workspace=shared run build && npm --workspace=server run build && npm --workspace=client run build",
   "outputDirectory": "client/dist",
   "rewrites": [

@@ -10,6 +10,10 @@ out/
 .next/
 *.tsbuildinfo
 
+# Exception: shared/dist must be committed so Vercel can resolve @lexiguard/shared
+!shared/dist/
+!shared/dist/**
+
 # Environment variables
 .env
 .env.local

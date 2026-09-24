@@ -2,6 +2,7 @@ import {
   AnalysisResult,
   AnalysisResultSchema,
   DocumentClause,
+  DocumentSection,
   DocumentStructure,
   LEGAL_DISCLAIMER
 } from '@lexiguard/shared';
@@ -52,7 +53,7 @@ export class RealAIProvider implements AIProvider {
 
   async analyzeDocument(doc: DocumentStructure): Promise<AnalysisResult> {
     const allClauses: DocumentClause[] = [];
-    doc.sections.forEach((s) => allClauses.push(...s.clauses));
+    doc.sections.forEach((s: DocumentSection) => allClauses.push(...s.clauses));
 
     if (allClauses.length === 0) {
       return this.fallbackMock.analyzeDocument(doc);
