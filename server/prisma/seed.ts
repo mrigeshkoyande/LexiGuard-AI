@@ -2,8 +2,14 @@ import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import fs from 'fs';
 import path from 'path';
+import dotenv from 'dotenv';
 import { DocumentStructure } from '@lexiguard/shared';
 import { MockAIProvider } from '../src/ai/MockAIProvider';
+
+dotenv.config();
+if (!process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = 'file:./dev.db';
+}
 
 const prisma = new PrismaClient();
 const mockAI = new MockAIProvider();
