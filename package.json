@@ -36,5 +36,8 @@
     "esbuild": true,
     "prisma": true,
     "lexiguard-ai": true
+  },
+  "dependencies": {
+    "typescript": "^7.0.2"
   }
 }
