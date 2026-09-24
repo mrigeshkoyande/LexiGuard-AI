@@ -5,9 +5,9 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "npx cross-env DATABASE_URL=\"file:./dev.db\" prisma generate && (npx cross-env DATABASE_URL=\"file:./dev.db\" prisma db push --accept-data-loss || true) && (npx cross-env DATABASE_URL=\"file:./dev.db\" tsx prisma/seed.ts || true) && tsc",
+    "build": "prisma generate && tsc",
     "start": "node dist/index.js",
-    "test": "vitest run --fileParallelism=false",
+    "test": "vitest run --fileParallelism=false --pool=forks",
     "typecheck": "tsc --noEmit",
     "seed": "tsx prisma/seed.ts",
     "prisma:generate": "prisma generate",
