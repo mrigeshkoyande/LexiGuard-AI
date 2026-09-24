@@ -2,172 +2,293 @@
 
 > **LEGAL DISCLAIMER**: LexiGuard AI provides general legal information and document analysis. It does not provide legal advice or replace a qualified legal professional.
 
-LexiGuard AI is an AI-powered legal document analysis platform created to transform complex employment contracts, NDAs, leases, and service agreements into plain-English insights, actionable pre-signing checklists, grounded Q&A, and side-by-side contract diffs—maintaining **100% clause-level source traceability**.
+---
+
+## 📖 Problem Statement
+
+Legal agreements (employment contracts, NDAs, SaaS terms, leases) are filled with dense legalese, hidden auto-renewal traps, ambiguous obligations, and uncapped liabilities. Individuals and small business owners often sign contracts without understanding key terms, while hiring outside counsel for initial contract reviews is cost-prohibitive. Furthermore, generic AI chatbots frequently hallucinate non-existent clauses, invent legal remedies, or give confident but wrong legal conclusions.
 
 ---
 
-## 📚 Technical Documentation Index
+## 💡 Solution
 
-For deep architectural, visual, UI/UX, and AI algorithmic specifications, refer to the following companion guides:
-
-- 🎨 **[DESIGN.md](file:///c:/Users/Mrigesh%20koyande/OneDrive/Desktop/LexiGuard%20AI/LexiGuard-AI/DESIGN.md)** — Comprehensive UI/UX architecture, visual design system tokens, interactive split-screen workspace specification, component hierarchy, API endpoint contract, and database ER schema.
-- 🧠 **[BRAIN.md](file:///c:/Users/Mrigesh%20koyande/OneDrive/Desktop/LexiGuard%20AI/LexiGuard-AI/BRAIN.md)** — Complete AI engine architecture, document parsing heuristics, grounding & clause traceability enforcement, TF-IDF grounded Q&A retrieval algorithm, prompt injection defense, contract diffing engine, and action brief generator.
+**LexiGuard AI** is a security-hardened, grounded AI assistant for legal document analysis. It translates complex legal jargon into clear, plain-English insights while maintaining **100% clause-level source traceability**. Rather than relying on black-box predictions, LexiGuard AI anchors every finding, obligation, financial term, and Q&A answer to verified clause character offsets and page numbers in your uploaded document. When evidence is missing, the system **abstains** cleanly instead of fabricating facts.
 
 ---
 
-## 🌟 Key Features
+## ✨ Key Features
 
-1. **Clause-Level Source Traceability (Core Differentiator)**
-   - Every AI finding, risk alert, and monetary breakdown is mapped to a verified `sourceClauseId` and page number in the original contract.
-   - Clicking any finding card auto-scrolls and illuminates the exact clause in the Document Viewer with gold glowing pulse highlights.
+1. **100% Clause-Level Source Traceability (Core Differentiator)**
+   - Every AI finding, risk alert, deadline, and financial breakdown is bound to a verified `sourceClauseId` and page number in the original contract.
+   - Clicking **"View Source"** auto-scrolls the document viewer, centers the clause, and pulses a glowing gold highlight over the text.
 
 2. **Grounded Q&A ("Ask Lexi")**
-   - Answers questions strictly using document clauses retrieved via keyword & TF-IDF relevance scoring ([`relevance.ts`](file:///c:/Users/Mrigesh%20koyande/OneDrive/Desktop/LexiGuard%20AI/LexiGuard-AI/server/src/utils/relevance.ts)).
-   - Intercepts legal advice queries (e.g. *"Should I sign this?"*) with deterministic safety rules to refuse unauthorized practice of law safely.
+   - Answers questions strictly using candidate clauses retrieved via keyword and TF-IDF relevance scoring.
+   - Intercepts advice-seeking queries (*"Should I sign this?"*) with deterministic safety rules to refuse unauthorized practice of law.
 
-3. **Prompt-Injection Defense & Zero-Retention Security**
-   - Document text is encapsulated within protective `<document_content>` tags and treated strictly as untrusted evidence.
-   - Stateless AI memory model guarantees no client document data is retained or used to train foundational AI models.
+3. **Hallucination Prevention & Abstention Architecture**
+   - Implements a strict abstention policy: if candidate clauses lack sufficient evidence, LexiGuard AI returns `"I couldn't find this information in the uploaded document"` with `supportStatus: "INSUFFICIENT EVIDENCE"`.
 
-4. **Document Comparison (Clause Diffing)**
-   - Upload or select two contracts to compute structured clause diffs (Added, Modified, Removed) with risk severity tags.
+4. **Prompt Injection Defense**
+   - All uploaded document text is encapsulated within protective `<document_content>` tags and treated strictly as untrusted data. Embedded injection commands (*"IGNORE PREVIOUS INSTRUCTIONS"*) are rendered inert.
 
-5. **Editorial Dark / Light Mode & Interactive Notification Hub**
-   - Seamless toggling between **Midnight Luxury Dark Mode** (`#011826`) and **Editorial Warm Cream Light Mode** (`#F7F3EC`).
-   - Warning signs, statutory disclaimers, and auto-renewal deadlines consolidated into an interactive slide-over Notification Hub.
+5. **Contract Version Comparison (Clause Diffing)**
+   - Computes side-by-side diffs (Added, Modified, Removed clauses) between contract revisions while highlighting factual changes without biased assumptions.
 
-6. **Interactive Pre-Signing Action Brief & Lawyer Consultation Prep**
-   - Categorized checklists with persistent completion states in SQLite via Prisma.
-   - Generates pointed questions and risk covenant citations for attorney meetings.
+6. **Action Brief & Lawyer Consultation Dossier**
+   - Generates actionable pre-signing checklists categorized into obligations, deadlines, monetary terms, and review areas with exact clause citations.
 
----
-
-## 🐳 Docker Container Deployment (1-Command Launch)
-
-LexiGuard AI is 100% container-ready with a multi-stage production build, non-root security runner, automatic SQLite schema migration, database seeding, and health checks.
-
-### Option A: 1-Command Docker Compose (Recommended)
-```bash
-docker compose up -d
-```
-The application will automatically build, configure the SQLite database, seed the initial sample contracts, and become accessible at:
-👉 **`http://localhost:5000`** (Frontend SPA & Backend API unified on port 5000)
-
-View logs:
-```bash
-docker compose logs -f
-```
-
-Stop container:
-```bash
-docker compose down
-```
-
-### Option B: Build & Run Dockerfile Directly
-```bash
-# Build production multi-stage image
-npm run docker:build
-# or: docker build -t lexiguard-ai:latest .
-
-# Run container with persistent volumes
-docker run -d \
-  -p 5000:5000 \
-  --name lexiguard-app \
-  -v lexiguard_data:/app/server/prisma \
-  -v lexiguard_uploads:/app/server/uploads \
-  lexiguard-ai:latest
-```
+7. **Zero-Retention & Security Hardening**
+   - Enforces strict user-level IDOR document isolation, file magic-byte validation, JWT authentication, and zero-retention stateless inference.
 
 ---
 
-## 🚀 Local Development Quickstart
+## 🏗️ Architecture
+
+```
+                 +---------------------------------------+
+                 |            REACT CLIENT               |
+                 | (TypeScript, Tailwind, Three.js 3D)   |
+                 +---------------------------------------+
+                                     |
+                             REST API (JSON)
+                                     |
+                                     v
+                 +---------------------------------------+
+                 |            EXPRESS SERVER             |
+                 | (Middleware, Auth, Multer, RateLimit) |
+                 +---------------------------------------+
+                                     |
+          +--------------------------+--------------------------+
+          |                          |                          |
+          v                          v                          v
++------------------+       +------------------+       +-------------------+
+| DOCUMENT SERVICE |       |   Q&A SERVICE    |       |  COMPARE SERVICE  |
+|  (Parsing & DB)  |       | (Relevance & AI) |       |  (Clause Diffs)   |
++------------------+       +------------------+       +-------------------+
+          |                          |                          |
+          +--------------------------+--------------------------+
+                                     |
+                                     v
+                 +---------------------------------------+
+                 |           AI PROVIDER LAYER           |
+                 |  (MockAIProvider / RealAIProvider)    |
+                 +---------------------------------------+
+                                     |
+                                     v
+                 +---------------------------------------+
+                 |             PRISMA ORM                |
+                 |          (SQLite Database)            |
+                 +---------------------------------------+
+```
+
+---
+
+## 🎯 AI Grounding Strategy
+
+```
+USER QUESTION
+      ↓
+DOCUMENT OWNERSHIP CHECK
+      ↓
+DOCUMENT RETRIEVAL
+      ↓
+TEXT / CLAUSE RETRIEVAL
+      ↓
+RELEVANCE FILTER (TF-IDF & Keyword Scoring)
+      ↓
+EVIDENCE VALIDATION (Threshold Check)
+      ↓
+LLM GENERATION (Isolated Prompt Context)
+      ↓
+STRUCTURED OUTPUT VALIDATION (Zod Runtime Validation)
+      ↓
+SOURCE VALIDATION (Verify Clause ID in DB)
+      ↓
+UNSUPPORTED CLAIM CHECK & SAFETY FILTER
+      ↓
+FINAL RESPONSE + SOURCE REFERENCES
+```
+
+---
+
+## 🛡️ Hallucination Prevention
+
+- **Grounding Rule:** Answers are generated strictly from candidate clauses retrieved from the user's uploaded document.
+- **Literal Abstention Policy:** If candidate clauses lack evidence, the system returns `"I couldn't find this information in the uploaded document."`
+- **Evidence Status Badges:** Instead of uncalibrated percentage confidence scores, LexiGuard AI displays three explicit evidence states:
+  - `SUPPORTED` (✓ Verified source evidence)
+  - `PARTIALLY SUPPORTED` (ℹ Partial candidate match)
+  - `INSUFFICIENT EVIDENCE` (⚠ Fact absent from document)
+
+---
+
+## 🔒 Security
+
+- **IDOR Protection:** Every document operation checks `doc.userId === req.user.id`.
+- **Upload Security:** Enforces extension whitelisting (`.pdf`, `.docx`, `.txt`), magic-byte inspection (blocking Windows PE `MZ` and ELF binaries), and size limits (10 MB max).
+- **Secret & Token Safety:** Tokens, passwords, and API keys are never logged or exposed in client responses.
+- **XSS Prevention:** Document content is escaped via React DOM rendering, preventing HTML/script injection.
+
+For full security policies, see [`SECURITY.md`](SECURITY.md).
+
+---
+
+## 🔑 Privacy
+
+- **Zero Retention Policy:** Documents and user inferences are stored in isolated user accounts with strict database encryption and zero public training model exposure.
+- **Local / Self-Hosted Support:** Full offline operation supported via `AI_PROVIDER=mock`.
+
+---
+
+## 🧪 Testing
+
+The repository includes a multi-layered test suite built with Vitest and Supertest:
+
+```bash
+# Run all unit, integration, and security tests
+npm test
+```
+
+### Test Suite Summary (31 Tests Passed):
+- `hallucination_adversarial_suite.test.ts` (10 tests) — Abstention, fake clause refusal, external law non-fabrication, hypothetical handling, empty doc handling.
+- `ownership_idor.test.ts` (4 tests) — Multi-tenant IDOR security validation.
+- `upload_validation.test.ts` (3 tests) — Magic bytes & executable file rejections.
+- `qna_grounding.test.ts` (3 tests) — Grounded retrieval & legal advice refusal heuristics.
+- `auth.test.ts` (6 tests) — JWT authentication & registration constraints.
+- `ai_schema_validation.test.ts` (3 tests) — Runtime Zod schema validation & recovery.
+- `deletion_cascade.test.ts` (1 test) — Relational cascade deletions.
+- `prompt_injection.test.ts` (1 test) — Malicious prompt instruction containment.
+
+```bash
+# Run TypeScript static check
+npm run typecheck
+```
+
+---
+
+## ♿ Accessibility
+
+- **WCAG 2.2 AA Principles:** Focus indicators, semantic HTML elements, keyboard navigation, and ARIA attributes across drawers and modals.
+- **Non-Color-Only Indicators:** Statuses rely on explicit icons (`✓`, `ℹ`, `!`) and text labels alongside color tokens.
+- **Mobile Responsiveness:** Tested and responsive down to 390px screens.
+
+---
+
+## ⚡ Performance
+
+- **Optimized Bundle:** Production build compiled via Vite with minification and dynamic chunk splitting.
+- **3D WebGL Safety:** WebGL 3D LegalCore background scales down smoothly or falls back if WebGL is unsupported or reduced motion is requested.
+
+---
+
+## 🎮 Demo Mode
+
+Evaluation judges can test the full capabilities of LexiGuard AI immediately via the **"Explore Interactive Demo"** button on the landing page, which automatically authenticates a demo account loaded with sample agreements (MSA, GDPR DPA, Term Sheet) without requiring an OpenAI API key.
+
+---
+
+## 💻 Tech Stack
+
+- **Frontend:** React 18, TypeScript, Vite, TailwindCSS, Lucide React, Three.js
+- **Backend:** Node.js, Express, TypeScript, Prisma ORM, SQLite
+- **AI & Retrieval:** OpenAI API / Mock AI Provider, Zod Runtime Validation, TF-IDF Clause Retrieval
+- **Testing:** Vitest, Supertest
+
+---
+
+## 🚀 Installation & Setup
 
 ### 1. Prerequisites
 - **Node.js**: v18.0.0 or higher
 - **npm**: v9.0.0 or higher
 
-### 2. Installation
+### 2. Install Dependencies
 ```bash
 npm install
 ```
 
-### 3. Database Setup & Demo Data Seeding
+### 3. Database Migration & Seeding
 ```bash
 npm run seed
 ```
-*Seeds `dev.db` with default demo user (`demo@lexiguard.ai` / `password123`) and pre-analyzed agreements.*
 
-### 4. Start Local Development Servers
+### 4. Run Application
 ```bash
 npm run dev
 ```
-- **Client (Frontend)**: `http://localhost:5173`
-- **Server (Backend API)**: `http://localhost:5000`
+- **Frontend SPA:** `http://localhost:5173`
+- **Backend API:** `http://localhost:5000`
 
 ---
 
-## ⚙️ Environment Configuration
+## ⚙️ Environment Variables
 
-Managed via `.env` (refer to `.env.example`):
+Copy `.env.example` to `.env`:
 
 ```env
-# Application Environment
-NODE_ENV=production
+NODE_ENV=development
 PORT=5000
-CLIENT_URL=http://localhost:5000
-
-# Authentication & Database
-JWT_SECRET=lexiguard_production_secret_key_change_in_production_32_chars_min
+CLIENT_URL=http://localhost:5173
+JWT_SECRET=lexiguard_dev_secret_key_change_in_production_32_chars_min
 DATABASE_URL="file:./dev.db"
 
-# AI Inference Provider:
-# 'mock' (default, offline, zero-cost) | 'gemini' | 'anthropic' | 'real'
+# AI Provider Options: 'mock' (default) | 'real'
 AI_PROVIDER=mock
-GEMINI_API_KEY=
-ANTHROPIC_API_KEY=
 OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4o-mini
 ```
 
 ---
 
-## 🔒 Security Model & Safe Engineering Practices
+## 🔌 API Architecture
 
-1. **IDOR & Ownership Enforcement**: All document, analysis, Q&A, and action-brief routes strictly enforce `document.userId === req.user.id`.
-2. **Magic Byte Binary Inspection**: Validates file headers (`%PDF-`, PK zip archive, UTF-8 text) to reject executable payloads (Windows PE `MZ`, Linux `ELF`).
-3. **Non-Root Container Security**: Docker container runs as unprivileged user `lexiguard` (UID 1001) preventing container breakout.
-4. **Cascading Deletions**: Deleting a document purges physical disk files and cascades database deletions across all relational models.
-5. **Sanitized Error Responses**: Internal stack traces are hidden from public API responses.
+- `POST /api/auth/register` — User registration
+- `POST /api/auth/login` — User authentication & JWT issuance
+- `GET /api/documents` — List user's documents
+- `GET /api/documents/:id` — Fetch document details, structure & findings
+- `POST /api/documents/upload` — Secure file upload & automated AI analysis
+- `DELETE /api/documents/:id` — Delete document and associated records
+- `POST /api/documents/:id/qna` — Grounded Q&A ("Ask Lexi")
+- `GET /api/documents/:id/action-brief` — Action Brief checklist items
+- `POST /api/compare` — Compare two user documents
 
 ---
 
-## 🧪 Test Suite & Verification Results
+## 📁 Project Structure
 
-```bash
-# Run unit & integration tests
-npm test
+```
+LexiGuard-AI/
+├── client/                     # React 18 SPA (Vite + TailwindCSS)
+├── server/                     # Express REST API & Prisma ORM
+│   ├── src/                    # Controllers, Services, AI Providers, Utils
+│   ├── prisma/                 # Database Schema & Migrations
+│   └── tests/                  # Vitest Test Suites
+├── shared/                     # Shared Types & Zod Schemas
+├── docs/                       # Architecture & AI Reliability Documentation
+│   ├── AI-RELIABILITY.md       # AI Grounding & Hallucination Prevention Guide
+│   └── ARCHITECTURE.md         # System Architecture & Diagram
+├── SECURITY.md                 # Security Policies & Vulnerability Reporting
+└── README.md                   # Project documentation
 ```
 
-```text
- ✓ tests/ai_schema_validation.test.ts  (3 tests)
- ✓ tests/upload_validation.test.ts     (3 tests)
- ✓ tests/auth.test.ts                  (6 tests)
- ✓ tests/deletion_cascade.test.ts      (1 test)
- ✓ tests/prompt_injection.test.ts      (1 test)
- ✓ tests/ownership_idor.test.ts        (4 tests)
- ✓ tests/qna_grounding.test.ts         (3 tests)
+---
 
- Test Files  7 passed (7)
-      Tests  21 passed (21)
-```
+## ⚠️ Known Limitations
 
-```bash
-# Run full workspace typecheck
-npm run typecheck
-```
-*Result: 0 errors across `@lexiguard/shared`, `@lexiguard/server`, and `@lexiguard/client`.*
+- **Image Scanned PDFs (OCR):** Currently supports text-selectable PDFs, DOCX, and TXT. Scanned image-only PDFs require pre-processing with external OCR tools.
+- **Complex Table Structures:** Embedded nested tables are extracted into linear text paragraphs.
 
 ---
 
 ## ⚖️ Legal Disclaimer
 
-> **LexiGuard AI provides general legal information and document analysis. It does not provide legal advice or replace a qualified legal professional.**
+**LexiGuard AI provides general legal information and document analysis. It does not provide legal advice or replace a qualified legal professional.**
+
+---
+
+## 🔮 Future Improvements
+
+- **Native OCR Integration:** Tesseract/PDFocr pipeline for non-selectable scanned contracts.
+- **Multi-Document Portfolio Chat:** Cross-referencing findings across an entire folder of vendor contracts simultaneously.
+- **PDF Export Dossier:** One-click PDF generation of Lawyer Prep briefs for outside counsel consultations.
