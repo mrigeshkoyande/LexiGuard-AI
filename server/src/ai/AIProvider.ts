@@ -2,13 +2,19 @@ import {
   AnalysisResult,
   ComparisonRecord,
   DocumentClause,
-  DocumentStructure
+  DocumentStructure,
+  QuestionSource,
+  SupportStatus
 } from '@lexiguard/shared';
 
 export interface AIQuestionResult {
   answer: string;
+  status?: SupportStatus;
+  sources?: QuestionSource[];
   sourceClauseIds: string[];
   confidence: number;
+  limitation?: string;
+  nextStep?: string;
 }
 
 export interface AIComparisonResult {

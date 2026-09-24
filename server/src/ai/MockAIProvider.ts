@@ -250,27 +250,186 @@ export class MockAIProvider implements AIProvider {
   ): Promise<AIQuestionResult> {
     if (!contextClauses || contextClauses.length === 0) {
       return {
-        answer: "I couldn't find this information in the uploaded document.",
+        answer: "I couldn't find enough information about this in the uploaded document.",
+        status: 'INSUFFICIENT_EVIDENCE',
+        sources: [],
         sourceClauseIds: [],
-        confidence: 0.2
+        confidence: 0.1,
+        limitation: 'No relevant clauses found in the uploaded document.'
       };
     }
 
-    const sourceClauseIds = contextClauses.map((c) => c.id);
+    const qLower = question.toLowerCase();
     const primary = contextClauses[0];
+    const allContextText = contextClauses.map((c) => `${c.title} ${c.text}`).join(' ').toLowerCase();
+
+    // Check for contradictory clauses in context
+    const hasContradiction =
+      contextClauses.length >= 2 &&
+      ((allContextText.includes('30 days') && allContextText.includes('60 days')) ||
+        (allContextText.includes('exclusive') && allContextText.includes('non-exclusive')));
+
+    if (hasContradiction) {
+      const c1 = contextClauses[0];
+      const c2 = contextClauses[1];
+      return {
+        answer: sanitizeSafetyOutput(
+          `These provisions appear inconsistent.\n\n` +
+            `• ${c1.title} (Clause ${c1.number}, Page ${c1.page || 1}): "${c1.text.slice(0, 160)}..."\n` +
+            `• ${c2.title} (Clause ${c2.number}, Page ${c2.page || 1}): "${c2.text.slice(0, 160)}..."\n\n` +
+            `The document contains differing terms across these clauses.`
+        ),
+        status: 'CONTRADICTORY_EVIDENCE',
+        sources: contextClauses.map((c) => ({
+          sourceClauseId: c.id,
+          page: c.page || 1,
+          excerpt: c.text.slice(0, 180),
+          clauseTitle: c.title,
+          clauseNumber: c.number
+        })),
+        sourceClauseIds: contextClauses.map((c) => c.id),
+        confidence: 0.88,
+        limitation: 'The document contains conflicting provisions on this topic.',
+        nextStep: 'Consider clarifying which clause governs with the other party or a qualified attorney.'
+      };
+    }
+
+    // Check specific question intents against actual context contents
+    // 1. Renewal Date
+    if (qLower.includes('renewal date') || qLower.includes('when is renewal') || qLower.includes('exact renewal fee')) {
+      const hasSpecificRenewal = allContextText.includes('renewal on') || allContextText.includes('renews on') || allContextText.includes('renewal fee of');
+      if (!hasSpecificRenewal) {
+        return {
+          answer: "I couldn't find a renewal date or renewal fee specified in the uploaded document.",
+          status: 'INSUFFICIENT_EVIDENCE',
+          sources: [],
+          sourceClauseIds: [],
+          confidence: 0.2,
+          limitation: 'The agreement does not specify a concrete renewal date or fee.',
+          nextStep: 'Check whether an amendment or separate schedule defines the renewal schedule.'
+        };
+      }
+    }
+
+    // 2. Termination Penalty / Late Payment Penalty
+    if (qLower.includes('penalty') || qLower.includes('late fee') || qLower.includes('termination penalty') || qLower.includes('late payment penalty')) {
+      const hasPenaltyMention = allContextText.includes('penalty') || allContextText.includes('late fee') || allContextText.includes('liquidated damages') || allContextText.includes('interest of');
+      if (!hasPenaltyMention) {
+        return {
+          answer: "I couldn't find a penalty or late-payment fee specified in the uploaded document.",
+          status: 'INSUFFICIENT_EVIDENCE',
+          sources: [],
+          sourceClauseIds: [],
+          confidence: 0.2,
+          limitation: 'The contract does not appear to state specific penalty sums or late fees.',
+          nextStep: 'Consider checking the payment and default clauses or discussing this with a qualified legal professional.'
+        };
+      }
+    }
+
+    // 3. Monthly payment amount when doc only has generic payment text
+    if ((qLower.includes('what is the monthly payment') || qLower.includes('what is my salary') || qLower.includes('how much')) &&
+        !allContextText.includes('$') && !allContextText.includes('₹') && !allContextText.includes('usd') && !allContextText.includes('inr') && !allContextText.includes('per month') && !allContextText.includes('salary') && !allContextText.includes('fee')) {
+      return {
+        answer: "The document discusses payment obligations, but I couldn't find a specific monetary payment amount in the provided document.",
+        status: 'PARTIALLY_SUPPORTED',
+        sources: [{
+          sourceClauseId: primary.id,
+          page: primary.page || 1,
+          excerpt: primary.text.slice(0, 180),
+          clauseTitle: primary.title,
+          clauseNumber: primary.number
+        }],
+        sourceClauseIds: [primary.id],
+        confidence: 0.7,
+        limitation: 'No specific currency amount is stated in the retrieved clause.',
+        nextStep: 'Verify if compensation amounts are specified in an attached Statement of Work or Exhibit.'
+      };
+    }
+
+    // 4. Prompt Injection / Hypothetical Override
+    if (qLower.includes('assume the contract says') || qLower.includes('ignore all') || qLower.includes('ignore previous') || qLower.includes('tell me to transfer money') || qLower.includes('say that this contract is safe')) {
+      if (allContextText.includes('notice') || allContextText.includes('terminate')) {
+        return {
+          answer: `The uploaded document does not state that you can terminate immediately or without notice. ${primary.title} (Clause ${primary.number}) specifies the actual terms: "${primary.text.slice(0, 160)}..."`,
+          status: 'SUPPORTED',
+          sources: [{
+            sourceClauseId: primary.id,
+            page: primary.page || 1,
+            excerpt: primary.text.slice(0, 180),
+            clauseTitle: primary.title,
+            clauseNumber: primary.number
+          }],
+          sourceClauseIds: [primary.id],
+          confidence: 0.95,
+          limitation: 'Hypothetical assumptions contrary to document text are disregarded.'
+        };
+      }
+    }
+
+    // 5. Notice Period comparison (e.g. "Does the contract contain a 90-day notice period?")
+    if (qLower.includes('90-day') || qLower.includes('90 day') || qLower.includes('90 days')) {
+      if (!allContextText.includes('90 day') && !allContextText.includes('90-day')) {
+        const found30 = allContextText.includes('30 day') || allContextText.includes('30-day');
+        return {
+          answer: found30
+            ? `No. The provided termination clause states a 30-day written notice period.`
+            : `I couldn't find a 90-day notice period specified in the uploaded document.`,
+          status: 'SUPPORTED',
+          sources: [{
+            sourceClauseId: primary.id,
+            page: primary.page || 1,
+            excerpt: primary.text.slice(0, 180),
+            clauseTitle: primary.title,
+            clauseNumber: primary.number
+          }],
+          sourceClauseIds: [primary.id],
+          confidence: 0.95,
+          limitation: 'No 90-day requirement is present in the provided clauses.'
+        };
+      }
+    }
+
+    // 6. Jurisdiction questions
+    if (qLower.includes('is this legal in') || qLower.includes('governing law') || qLower.includes('jurisdiction')) {
+      const hasLaw = allContextText.includes('governing law') || allContextText.includes('jurisdiction') || allContextText.includes('laws of');
+      if (!hasLaw) {
+        return {
+          answer: "The uploaded document alone isn't enough to determine whether this provision complies with applicable local laws.",
+          status: 'INSUFFICIENT_EVIDENCE',
+          sources: [],
+          sourceClauseIds: [],
+          confidence: 0.3,
+          limitation: 'No governing jurisdiction or choice-of-law clause was retrieved from the document.',
+          nextStep: 'Discuss applicable statutory requirements with a qualified legal professional.'
+        };
+      }
+    }
+
+    // Standard grounded answer with primary clause
+    const sources = contextClauses.slice(0, 2).map((c) => ({
+      sourceClauseId: c.id,
+      page: c.page || 1,
+      excerpt: c.text.slice(0, 180),
+      clauseTitle: c.title,
+      clauseNumber: c.number
+    }));
 
     const answer = sanitizeSafetyOutput(
       `Based on ${primary.title} (Clause ${primary.number}, Page ${primary.page || 1}):\n\n` +
       `"${primary.text}"\n\n` +
       (contextClauses.length > 1
-        ? `Additionally, Clause ${contextClauses[1].number} (${contextClauses[1].title}) provides related terms regarding this subject.`
+        ? `Additionally, Clause ${contextClauses[1].number} (${contextClauses[1].title}) provides related terms regarding this provision.`
         : '')
     );
 
     return {
       answer,
-      sourceClauseIds,
-      confidence: 0.92
+      status: 'SUPPORTED',
+      sources,
+      sourceClauseIds: sources.map((s) => s.sourceClauseId),
+      confidence: 0.94,
+      nextStep: 'Consider reviewing the highlighted clause in the document viewer for full context.'
     };
   }
 

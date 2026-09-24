@@ -7,7 +7,10 @@ import {
   ChevronUp,
   ExternalLink,
   Loader2,
-  Shield
+  Shield,
+  CheckCircle2,
+  HelpCircle,
+  FileText
 } from 'lucide-react';
 import { QuestionResponse } from '@lexiguard/shared';
 import { api } from '../services/api';
@@ -58,6 +61,9 @@ export const AskLexiDock: React.FC<AskLexiDockProps> = ({ documentId, onSelectCl
         {
           question: text,
           answer: `Error: ${err.message || 'Failed to process question'}`,
+          status: 'INSUFFICIENT_EVIDENCE',
+          supportStatus: 'INSUFFICIENT_EVIDENCE',
+          sources: [],
           sourceClauseIds: [],
           confidence: 0,
           isDeclinedAdvice: false
@@ -79,7 +85,7 @@ export const AskLexiDock: React.FC<AskLexiDockProps> = ({ documentId, onSelectCl
   return (
     <div
       className={`fixed bottom-4 right-4 z-30 w-full max-w-md bg-brand-midnight-card border border-brand-gold/40 rounded-2xl shadow-2xl transition-all duration-300 overflow-hidden flex flex-col backdrop-blur-xl ${
-        isOpen ? 'h-[500px]' : 'h-14'
+        isOpen ? 'h-[520px]' : 'h-14'
       }`}
     >
       {/* Dock Header */}
@@ -98,7 +104,7 @@ export const AskLexiDock: React.FC<AskLexiDockProps> = ({ documentId, onSelectCl
                 Grounded Q&A
               </span>
             </div>
-            <p className="text-[10px] text-brand-sand/70">Strictly answers from uploaded document</p>
+            <p className="text-[10px] text-brand-sand/70">Evidence-grounded contract assistant</p>
           </div>
         </div>
 
@@ -119,7 +125,7 @@ export const AskLexiDock: React.FC<AskLexiDockProps> = ({ documentId, onSelectCl
                     <Shield className="w-3.5 h-3.5" /> Hi, I'm Lexi!
                   </p>
                   <p>
-                    Ask any question about this agreement. Answers are strictly grounded in candidate clauses with verified source citations.
+                    Ask any question about this agreement. Answers are strictly grounded in candidate clauses with verified source citations. Lexi abstains if the terms are not in the document.
                   </p>
                 </div>
 
@@ -152,23 +158,68 @@ export const AskLexiDock: React.FC<AskLexiDockProps> = ({ documentId, onSelectCl
                   {/* AI Response */}
                   <div className="flex justify-start">
                     <div
-                      className={`max-w-[90%] p-3.5 rounded-xl rounded-bl-none border shadow-md space-y-2 ${
+                      className={`max-w-[95%] w-full p-3.5 rounded-xl rounded-bl-none border shadow-md space-y-2.5 ${
                         msg.isDeclinedAdvice
                           ? 'bg-amber-950/40 border-amber-500/40 text-amber-200'
                           : 'bg-brand-navy-dark border-brand-gold/20 text-brand-warmwhite'
                       }`}
                     >
-                      {msg.isDeclinedAdvice && (
-                        <div className="flex items-center gap-1.5 text-amber-400 text-[11px] font-bold">
-                          <AlertTriangle className="w-3.5 h-3.5" />
-                          <span>Legal Advice Request Declined</span>
-                        </div>
-                      )}
+                      {/* Status header */}
+                      <div className="flex items-center justify-between text-[10px] pb-1 border-b border-brand-gold/10">
+                        {msg.status === 'SUPPORTED' || msg.supportStatus === 'SUPPORTED' ? (
+                          <span className="text-emerald-300 font-bold flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3" /> Grounded in Document
+                          </span>
+                        ) : msg.status === 'CONTRADICTORY_EVIDENCE' || msg.supportStatus === 'CONTRADICTORY_EVIDENCE' ? (
+                          <span className="text-purple-300 font-bold flex items-center gap-1">
+                            <AlertTriangle className="w-3 h-3" /> Conflicting Clauses
+                          </span>
+                        ) : msg.status === 'PARTIALLY_SUPPORTED' || msg.supportStatus === 'PARTIALLY_SUPPORTED' || msg.supportStatus === 'PARTIALLY SUPPORTED' ? (
+                          <span className="text-amber-300 font-bold flex items-center gap-1">
+                            <HelpCircle className="w-3 h-3" /> Partial Evidence
+                          </span>
+                        ) : (
+                          <span className="text-zinc-400 font-bold flex items-center gap-1">
+                            <FileText className="w-3 h-3" /> Insufficient Evidence
+                          </span>
+                        )}
+                        {msg.isDeclinedAdvice && (
+                          <span className="text-amber-400 font-bold">Advice Refused</span>
+                        )}
+                      </div>
 
                       <p className="whitespace-pre-wrap leading-relaxed text-xs">{msg.answer}</p>
 
+                      {/* Limitation if present */}
+                      {msg.limitation && (
+                        <div className="p-2 rounded bg-zinc-900/60 text-[10px] text-zinc-300 border border-zinc-800">
+                          <span className="font-bold text-zinc-400">LIMITATION: </span>
+                          {msg.limitation}
+                        </div>
+                      )}
+
                       {/* Source Clause Reference Badges */}
-                      {msg.sourceClauseIds && msg.sourceClauseIds.length > 0 && (
+                      {msg.sources && msg.sources.length > 0 ? (
+                        <div className="pt-2 border-t border-brand-gold/15 space-y-1.5">
+                          <span className="text-[10px] text-brand-sand/70 font-mono block">CITED EVIDENCE:</span>
+                          {msg.sources.map((s, sIdx) => (
+                            <div key={sIdx} className="p-2 rounded bg-brand-midnight border border-brand-gold/15 text-[10px]">
+                              <div className="flex items-center justify-between text-brand-gold font-mono mb-1">
+                                <span>{s.clauseTitle || `Clause ${s.clauseNumber || sIdx + 1}`} · P.{s.page}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => onSelectClauseId(s.sourceClauseId)}
+                                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-brand-gold/15 hover:bg-brand-gold/30 text-brand-gold-light transition-colors"
+                                >
+                                  <span>View</span>
+                                  <ExternalLink className="w-2.5 h-2.5" />
+                                </button>
+                              </div>
+                              <p className="text-brand-sand/80 italic line-clamp-2">"{s.excerpt}"</p>
+                            </div>
+                          ))}
+                        </div>
+                      ) : msg.sourceClauseIds && msg.sourceClauseIds.length > 0 ? (
                         <div className="pt-2 border-t border-brand-gold/15 flex flex-wrap items-center gap-1.5">
                           <span className="text-[10px] text-brand-sand/70 font-medium">Sources:</span>
                           {msg.sourceClauseIds.map((clauseId) => (
@@ -183,7 +234,7 @@ export const AskLexiDock: React.FC<AskLexiDockProps> = ({ documentId, onSelectCl
                             </button>
                           ))}
                         </div>
-                      )}
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -234,3 +285,4 @@ export const AskLexiDock: React.FC<AskLexiDockProps> = ({ documentId, onSelectCl
     </div>
   );
 };
+

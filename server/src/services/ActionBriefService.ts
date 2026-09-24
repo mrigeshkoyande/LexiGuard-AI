@@ -20,10 +20,10 @@ export class ActionBriefService {
       orderBy: [{ priority: 'asc' }, { createdAt: 'asc' }]
     });
 
-    const completedCount = items.filter((i) => i.isCompleted).length;
+    const completedCount = items.filter((i: any) => i.isCompleted).length;
     const summary = `${completedCount} of ${items.length} pre-signing action items completed.`;
 
-    const mappedItems: ActionItemRecord[] = items.map((i) => ({
+    const mappedItems: ActionItemRecord[] = items.map((i: any) => ({
       id: i.id,
       documentId: i.documentId,
       userId: i.userId,

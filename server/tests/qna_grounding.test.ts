@@ -58,7 +58,7 @@ The Employee will receive an annual salary of $120,000 paid bi-weekly.`;
       .send({ question: 'What is the secret recipe for chocolate cake and quantum physics?' });
 
     expect(res.status).toBe(200);
-    expect(res.body.answer).toBe("I couldn't find this information in the uploaded document.");
+    expect(res.body.answer.toLowerCase()).toContain("couldn't find");
     expect(res.body.sourceClauseIds.length).toBe(0);
   });
 

@@ -29,7 +29,7 @@ export class DocumentService {
       orderBy: { createdAt: 'desc' }
     });
 
-    return docs.map((doc) => ({
+    return docs.map((doc: any) => ({
       id: doc.id,
       userId: doc.userId,
       title: doc.title,
@@ -178,10 +178,10 @@ export class DocumentService {
     const doc = await this.getDocumentById(documentId, userId);
 
     return {
-      sections: doc.sections.map((sec) => ({
+      sections: doc.sections.map((sec: any) => ({
         id: sec.id,
         title: sec.title,
-        clauses: sec.clauses.map((c) => ({
+        clauses: sec.clauses.map((c: any) => ({
           id: c.id,
           number: c.number,
           title: c.title,

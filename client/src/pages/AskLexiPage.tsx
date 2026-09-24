@@ -6,7 +6,10 @@ import {
   AlertTriangle,
   ExternalLink,
   Shield,
-  Loader2
+  Loader2,
+  CheckCircle2,
+  HelpCircle,
+  FileText
 } from 'lucide-react';
 import { DocumentSummary, QuestionResponse } from '@lexiguard/shared';
 import { api } from '../services/api';
@@ -74,6 +77,9 @@ export const AskLexiPage: React.FC<AskLexiPageProps> = ({ documentId, onNavigate
         {
           question: text,
           answer: `Error: ${err.message || 'Failed to process question'}`,
+          status: 'INSUFFICIENT_EVIDENCE',
+          supportStatus: 'INSUFFICIENT_EVIDENCE',
+          sources: [],
           sourceClauseIds: [],
           confidence: 0,
           isDeclinedAdvice: false
@@ -85,14 +91,46 @@ export const AskLexiPage: React.FC<AskLexiPageProps> = ({ documentId, onNavigate
   };
 
   const sampleQuestions = [
-    'What are my key obligations and payment terms?',
-    'What happens if either party terminates without cause?',
-    'What are the non-compete, confidentiality, and IP ownership rules?',
-    'What deadlines or renewal notice windows apply?',
+    'What is the monthly salary or payment amount?',
+    'What is the exact termination notice period?',
+    'What are the non-compete and IP ownership restrictions?',
+    'What is the renewal date or late payment fee?',
     'Should I sign this agreement?'
   ];
 
   const selectedDoc = documents.find((d) => d.id === selectedDocId);
+
+  const getStatusBadge = (status?: string) => {
+    switch (status) {
+      case 'SUPPORTED':
+        return (
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+            <CheckCircle2 className="w-3 h-3" /> VERIFIED IN DOCUMENT
+          </span>
+        );
+      case 'PARTIALLY_SUPPORTED':
+      case 'PARTIALLY SUPPORTED':
+        return (
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">
+            <HelpCircle className="w-3 h-3" /> PARTIALLY SUPPORTED
+          </span>
+        );
+      case 'CONTRADICTORY_EVIDENCE':
+        return (
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30">
+            <AlertTriangle className="w-3 h-3" /> CONFLICTING PROVISIONS
+          </span>
+        );
+      case 'INSUFFICIENT_EVIDENCE':
+      case 'INSUFFICIENT EVIDENCE':
+      default:
+        return (
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-zinc-500/15 text-zinc-300 border border-zinc-500/30">
+            <FileText className="w-3 h-3" /> INSUFFICIENT EVIDENCE — ABSTAINED
+          </span>
+        );
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -101,7 +139,7 @@ export const AskLexiPage: React.FC<AskLexiPageProps> = ({ documentId, onNavigate
         <div>
           <div className="flex items-center gap-2">
             <h1 className="font-headline text-3xl sm:text-4xl text-brand-warmwhite font-light">Ask Lexi</h1>
-            <Badge variant="gold">Grounded Q&A</Badge>
+            <Badge variant="gold">Grounded Legal Assistant</Badge>
           </div>
           <p className="text-xs text-brand-sand/80 mt-1">
             Interrogate your uploaded agreements with natural language queries backed by verified clause evidence
@@ -134,7 +172,7 @@ export const AskLexiPage: React.FC<AskLexiPageProps> = ({ documentId, onNavigate
         {/* Left Column: Chat Stream (8 cols) */}
         <div className="lg:col-span-8 bg-brand-midnight-card/90 border border-brand-gold/25 rounded-2xl p-6 shadow-navy-deep flex flex-col justify-between backdrop-blur-md">
           {/* Messages Scroll Area */}
-          <div className="flex-1 overflow-y-auto space-y-4 max-h-[460px] pr-2">
+          <div className="flex-1 overflow-y-auto space-y-5 max-h-[480px] pr-2">
             {messages.length === 0 ? (
               <div className="space-y-4 py-8 text-center max-w-md mx-auto">
                 <div className="w-12 h-12 rounded-2xl bg-brand-navy border border-brand-gold/30 text-brand-gold flex items-center justify-center mx-auto shadow-md">
@@ -145,13 +183,13 @@ export const AskLexiPage: React.FC<AskLexiPageProps> = ({ documentId, onNavigate
                     Ask anything about "{selectedDoc?.title || 'your contract'}"
                   </h3>
                   <p className="text-xs text-brand-sand/80 mt-1">
-                    Every answer is strictly grounded in candidate clauses with verified source citations.
+                    Every answer is strictly grounded in candidate clauses with verified source citations. Lexi abstains if the terms are not in the document.
                   </p>
                 </div>
               </div>
             ) : (
               messages.map((msg, idx) => (
-                <div key={idx} className="space-y-2 text-xs">
+                <div key={idx} className="space-y-3 text-xs">
                   {/* User Question */}
                   <div className="flex justify-end">
                     <div className="max-w-[85%] p-3.5 rounded-xl bg-brand-gold text-brand-midnight font-medium rounded-br-none shadow-md">
@@ -159,38 +197,74 @@ export const AskLexiPage: React.FC<AskLexiPageProps> = ({ documentId, onNavigate
                     </div>
                   </div>
 
-                  {/* AI Response */}
+                  {/* AI Response Card */}
                   <div className="flex justify-start">
                     <div
-                      className={`max-w-[90%] p-4 rounded-xl rounded-bl-none border shadow-md space-y-2.5 ${
+                      className={`max-w-[95%] w-full p-4 rounded-xl rounded-bl-none border shadow-md space-y-3 ${
                         msg.isDeclinedAdvice
                           ? 'bg-amber-950/40 border-amber-500/40 text-amber-200'
                           : 'bg-brand-navy-dark border-brand-gold/25 text-brand-warmwhite'
                       }`}
                     >
-                      {msg.isDeclinedAdvice && (
-                        <div className="flex items-center gap-1.5 text-amber-400 text-[11px] font-bold">
-                          <AlertTriangle className="w-3.5 h-3.5" />
-                          <span>Legal Advice Request Declined</span>
+                      {/* Top Bar: Status Badge */}
+                      <div className="flex items-center justify-between gap-2 border-b border-brand-gold/15 pb-2">
+                        {getStatusBadge(msg.status || msg.supportStatus)}
+                        {msg.isDeclinedAdvice && (
+                          <span className="text-[10px] text-amber-400 font-bold flex items-center gap-1">
+                            <AlertTriangle className="w-3.5 h-3.5" /> Legal Advice Refusal
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Main Answer Content */}
+                      <p className="whitespace-pre-wrap leading-relaxed text-xs">{msg.answer}</p>
+
+                      {/* Limitation Box if present */}
+                      {msg.limitation && (
+                        <div className="p-2.5 rounded-lg bg-zinc-900/60 border border-zinc-700/50 text-[11px] text-zinc-300">
+                          <span className="font-bold text-zinc-400 block mb-0.5">DOCUMENT LIMITATION:</span>
+                          <p>{msg.limitation}</p>
                         </div>
                       )}
 
-                      <p className="whitespace-pre-wrap leading-relaxed text-xs">{msg.answer}</p>
+                      {/* Next Step Box if present */}
+                      {msg.nextStep && (
+                        <div className="p-2.5 rounded-lg bg-brand-gold/10 border border-brand-gold/30 text-[11px] text-brand-gold-light">
+                          <span className="font-bold text-brand-gold block mb-0.5">SUGGESTED REVIEW:</span>
+                          <p>{msg.nextStep}</p>
+                        </div>
+                      )}
 
-                      {/* Source Citations */}
-                      {msg.sourceClauseIds && msg.sourceClauseIds.length > 0 && (
-                        <div className="pt-2 border-t border-brand-gold/15 flex flex-wrap items-center gap-2">
-                          <span className="text-[10px] text-brand-sand/70 font-mono">Verified Evidence:</span>
-                          {msg.sourceClauseIds.map((clauseId) => (
-                            <button
-                              key={clauseId}
-                              onClick={() => selectedDocId && onNavigate('workspace', selectedDocId)}
-                              className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded bg-brand-gold/15 hover:bg-brand-gold/25 text-brand-gold-light border border-brand-gold/30 transition-colors"
-                            >
-                              <span>§ View in Workspace</span>
-                              <ExternalLink className="w-2.5 h-2.5" />
-                            </button>
-                          ))}
+                      {/* Verified Evidence Excerpts */}
+                      {msg.sources && msg.sources.length > 0 && (
+                        <div className="pt-2 border-t border-brand-gold/15 space-y-2">
+                          <span className="text-[10px] text-brand-sand/70 font-mono uppercase font-bold tracking-wider block">
+                            Verified Source Evidence:
+                          </span>
+                          <div className="space-y-2">
+                            {msg.sources.map((s, sIdx) => (
+                              <div
+                                key={sIdx}
+                                className="p-2.5 rounded-lg bg-brand-midnight border border-brand-gold/20 flex flex-col gap-1.5"
+                              >
+                                <div className="flex items-center justify-between text-[10px] font-mono text-brand-gold">
+                                  <span>
+                                    {s.clauseTitle || `Clause ${s.clauseNumber || sIdx + 1}`} · Page {s.page}
+                                  </span>
+                                  <button
+                                    onClick={() => selectedDocId && onNavigate('workspace', selectedDocId)}
+                                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-brand-gold/15 hover:bg-brand-gold/30 text-brand-gold-light transition-colors"
+                                  >
+                                    <span>§ View Source</span>
+                                    <ExternalLink className="w-2.5 h-2.5" />
+                                  </button>
+                                </div>
+                                <p className="text-[11px] text-brand-sand/90 italic line-clamp-3">
+                                  "{s.excerpt}"
+                                </p>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       )}
                     </div>
@@ -203,7 +277,7 @@ export const AskLexiPage: React.FC<AskLexiPageProps> = ({ documentId, onNavigate
               <div className="flex justify-start">
                 <div className="p-3.5 rounded-xl bg-brand-navy-dark border border-brand-gold/20 text-brand-gold flex items-center gap-2 text-xs">
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Searching document text & formulating grounded response...</span>
+                  <span>Retrieving document clauses & validating evidence...</span>
                 </div>
               </div>
             )}
@@ -259,10 +333,10 @@ export const AskLexiPage: React.FC<AskLexiPageProps> = ({ documentId, onNavigate
           {/* Grounding Transparency Info Box */}
           <div className="p-5 rounded-2xl bg-brand-navy-dark border border-brand-gold/20 space-y-2 text-xs text-brand-sand/80">
             <span className="text-[10px] uppercase font-bold text-brand-gold tracking-widest flex items-center gap-1">
-              <Shield className="w-3.5 h-3.5" /> Zero Hallucination Guarantee
+              <Shield className="w-3.5 h-3.5" /> Evidence-Grounded Legal Analysis
             </span>
             <p className="leading-relaxed">
-              Lexi answers strictly using indexed clauses from your uploaded document. If an answer cannot be verified in the contract text, Lexi safely declines to speculate.
+              Lexi answers strictly using retrieved clauses from your uploaded document. If an answer cannot be verified in the contract text, Lexi explicitly abstains rather than speculating.
             </p>
           </div>
         </div>
@@ -270,3 +344,4 @@ export const AskLexiPage: React.FC<AskLexiPageProps> = ({ documentId, onNavigate
     </div>
   );
 };
+

@@ -48,9 +48,17 @@ export interface DocumentStructure {
 
 // ============================================================================
 // ============================================================================
+// ============================================================================
 // Evidence Support States (Hallucination Prevention)
 // ============================================================================
-export const SupportStatusEnum = z.enum(['SUPPORTED', 'PARTIALLY SUPPORTED', 'INSUFFICIENT EVIDENCE']);
+export const SupportStatusEnum = z.enum([
+  'SUPPORTED',
+  'PARTIALLY_SUPPORTED',
+  'INSUFFICIENT_EVIDENCE',
+  'CONTRADICTORY_EVIDENCE',
+  'PARTIALLY SUPPORTED',
+  'INSUFFICIENT EVIDENCE'
+]);
 export type SupportStatus = z.infer<typeof SupportStatusEnum>;
 
 // ============================================================================
@@ -96,14 +104,26 @@ export interface QuestionRequest {
   question: string;
 }
 
+export interface QuestionSource {
+  sourceClauseId: string;
+  page: number;
+  excerpt: string;
+  clauseTitle?: string;
+  clauseNumber?: string;
+}
+
 export interface QuestionResponse {
   id?: string;
   question: string;
   answer: string;
+  status?: SupportStatus;
+  supportStatus: SupportStatus;
+  sources?: QuestionSource[];
   sourceClauseIds: string[];
   pageNumber?: number;
   confidence: number;
-  supportStatus?: SupportStatus;
+  limitation?: string;
+  nextStep?: string;
   isDeclinedAdvice: boolean;
   matchedClauses?: {
     id: string;
