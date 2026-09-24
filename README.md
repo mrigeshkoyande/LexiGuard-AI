@@ -241,14 +241,42 @@ OPENAI_MODEL=gpt-4o-mini
 
 ---
 
-## ☁️ Deployment
+## 🐳 Production Deployment with Docker (Recommended)
 
-LexiGuard AI is fully optimized for Vercel deployment as a serverless monorepo.
-To deploy successfully:
+LexiGuard AI is fully containerized as a single, production-grade Docker image that bundles the compiled frontend, Express backend, and embedded SQLite database.
+
+### Run with Docker Compose
+```bash
+# Build and launch in background
+docker compose up -d --build
+
+# View logs
+docker compose logs -f
+
+# Check health
+curl http://localhost:5000/api/health
+```
+Once started, the complete unified application is accessible at:
+- **Application URL:** `http://localhost:5000`
+- **Default Demo Account:** `demo@lexiguard.ai` / `password123`
+
+### Deploy Anywhere (Render, Railway, Fly.io, AWS ECS, GCP Cloud Run, VPS)
+Point your container host to this repository's `Dockerfile`. The container automatically:
+1. Generates Prisma engine binaries for Alpine Linux.
+2. Pushes SQLite database schema tables.
+3. Automatically seeds the initial legal demo documents if empty.
+4. Serves the optimized Vite single-page application and Express API on port `5000`.
+
+---
+
+## ☁️ Cloud / Vercel Serverless Deployment
+
+LexiGuard AI can also be deployed serverlessly on Vercel:
 1. **Framework Preset**: `Other` (or auto-detect)
-2. **Root Directory**: ` ` (Leave blank. Vercel must build from the repository root, not `server/`)
-3. **Build Command**: `npm run build` (This automatically runs the root `build` script)
-4. **Install Command**: `npm install` (The `postinstall` script automatically builds `@lexiguard/shared`)
+2. **Root Directory**: ` ` (Leave blank. Vercel must build from the repository root)
+3. **Build Command**: `npm run build`
+4. **Install Command**: `npm install --legacy-peer-deps`
+5. **Output Directory**: `client/dist`
 
 ---
 

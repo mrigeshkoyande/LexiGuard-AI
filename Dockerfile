@@ -17,7 +17,7 @@ COPY server/package.json ./server/
 COPY client/package.json ./client/
 
 # Install all workspace dependencies
-RUN npm ci
+RUN npm install
 
 # Copy source code across all workspaces
 COPY shared/ ./shared/
@@ -31,9 +31,6 @@ RUN npm --workspace=server run prisma:generate
 RUN npm run build:server
 RUN npm run build:client
 
-# Remove development dependencies to keep final bundle minimal
-RUN npm prune --production
-
 # ==============================================================================
 # Stage 2: Production Runtime Image
 # ==============================================================================
@@ -46,7 +43,7 @@ RUN apk add --no-cache curl openssl libc6-compat
 
 ENV NODE_ENV=production
 ENV PORT=5000
-ENV DATABASE_URL="file:./dev.db"
+ENV DATABASE_URL="file:/app/server/prisma/dev.db"
 
 # Create non-root system group & user for security
 RUN addgroup -g 1001 -S nodejs && \
@@ -63,8 +60,9 @@ COPY --from=builder /app/client/dist ./client/dist
 COPY docker-entrypoint.sh ./docker-entrypoint.sh
 RUN chmod +x ./docker-entrypoint.sh
 
-# Ensure storage directories exist with proper write permissions for non-root user
+# Ensure storage directories exist with universal write permissions
 RUN mkdir -p /app/server/uploads /app/server/prisma && \
+    chmod -R 777 /app/server/uploads /app/server/prisma && \
     chown -R lexiguard:nodejs /app
 
 USER lexiguard
@@ -72,7 +70,7 @@ USER lexiguard
 EXPOSE 5000
 
 # Docker Healthcheck
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
   CMD curl -f http://localhost:5000/api/health || exit 1
 
 ENTRYPOINT ["./docker-entrypoint.sh"]

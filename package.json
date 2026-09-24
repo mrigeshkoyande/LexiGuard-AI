@@ -37,6 +37,6 @@
     "lexiguard-ai": true
   },
   "dependencies": {
-    "typescript": "^7.0.2"
+    "typescript": "^5.4.5"
   }
 }

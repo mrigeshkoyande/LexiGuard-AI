@@ -7,6 +7,8 @@ node_modules/
 dist/
 build/
 out/
+!shared/dist
+!shared/dist/**
 graphify-out/
 .next/
 *.tsbuildinfo
