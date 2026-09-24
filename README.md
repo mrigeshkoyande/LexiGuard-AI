@@ -241,6 +241,17 @@ OPENAI_MODEL=gpt-4o-mini
 
 ---
 
+## ☁️ Deployment
+
+LexiGuard AI is fully optimized for Vercel deployment as a serverless monorepo.
+To deploy successfully:
+1. **Framework Preset**: `Other` (or auto-detect)
+2. **Root Directory**: ` ` (Leave blank. Vercel must build from the repository root, not `server/`)
+3. **Build Command**: `npm run build` (This automatically runs the root `build` script)
+4. **Install Command**: `npm install` (The `postinstall` script automatically builds `@lexiguard/shared`)
+
+---
+
 ## 🔌 API Architecture
 
 - `POST /api/auth/register` — User registration
