@@ -97,48 +97,51 @@ export const SettingsPage: React.FC<SettingsPageProps> = () => {
                   Select the underlying foundational model for semantic clause parsing and forensic risk scoring.
                 </p>
 
-                <div className="space-y-3 pt-2">
-                  {[
-                    {
-                      id: 'gemini-1.5-pro',
-                      title: 'Google Gemini 1.5 Pro (Recommended)',
-                      desc: '2M Token context window. Unmatched multi-page cross-contract reasoning.',
-                      badge: 'Production Default',
-                    },
-                    {
-                      id: 'claude-3-5-sonnet',
-                      title: 'Anthropic Claude 3.5 Sonnet',
-                      desc: 'High legal drafting precision and nuanced redlining suggestions.',
-                      badge: 'Supported',
-                    },
-                    {
-                      id: 'local-llama-legal',
-                      title: 'Self-Hosted Llama-3 70B Legal (Air-Gapped)',
-                      desc: 'Zero-egress on-premise inference for classified defense or banking documents.',
-                      badge: 'Enterprise',
-                    },
-                  ].map((m) => (
-                    <label
-                      key={m.id}
-                      onClick={() => setAiModel(m.id)}
-                      className={`block p-4 rounded-xl border cursor-pointer transition-all ${
-                        aiModel === m.id
-                          ? 'bg-slate-950 border-lexi-gold/60 shadow-lg shadow-lexi-gold/10'
-                          : 'bg-slate-950/40 border-slate-800/80 hover:border-slate-700'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <div className="text-xs font-bold text-white">{m.title}</div>
-                          <div className="text-[11px] text-slate-400 mt-1">{m.desc}</div>
+                  <div role="radiogroup" aria-label="AI Model" className="space-y-3 pt-2">
+                    {[
+                      {
+                        id: 'gemini-1.5-pro',
+                        title: 'Google Gemini 1.5 Pro (Recommended)',
+                        desc: '2M Token context window. Unmatched multi-page cross-contract reasoning.',
+                        badge: 'Production Default',
+                      },
+                      {
+                        id: 'claude-3-5-sonnet',
+                        title: 'Anthropic Claude 3.5 Sonnet',
+                        desc: 'High legal drafting precision and nuanced redlining suggestions.',
+                        badge: 'Supported',
+                      },
+                      {
+                        id: 'local-llama-legal',
+                        title: 'Self-Hosted Llama-3 70B Legal (Air-Gapped)',
+                        desc: 'Zero-egress on-premise inference for classified defense or banking documents.',
+                        badge: 'Enterprise',
+                      },
+                    ].map((m) => (
+                      <button
+                        type="button"
+                        key={m.id}
+                        role="radio"
+                        aria-checked={aiModel === m.id}
+                        onClick={() => setAiModel(m.id)}
+                        className={`block w-full text-left p-4 rounded-xl border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-lexi-gold ${
+                          aiModel === m.id
+                            ? 'bg-slate-950 border-lexi-gold/60 shadow-lg shadow-lexi-gold/10'
+                            : 'bg-slate-950/40 border-slate-800/80 hover:border-slate-700'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <div className="text-xs font-bold text-white">{m.title}</div>
+                            <div className="text-[11px] text-slate-400 mt-1">{m.desc}</div>
+                          </div>
+                          <span className="px-2 py-0.5 rounded text-[9px] font-mono uppercase bg-slate-900 border border-slate-700 text-slate-300">
+                            {m.badge}
+                          </span>
                         </div>
-                        <span className="px-2 py-0.5 rounded text-[9px] font-mono uppercase bg-slate-900 border border-slate-700 text-slate-300">
-                          {m.badge}
-                        </span>
-                      </div>
-                    </label>
-                  ))}
-                </div>
+                      </button>
+                    ))}
+                  </div>
               </div>
 
               {/* Sensitivity and Confidence Sliders */}
@@ -258,16 +261,18 @@ export const SettingsPage: React.FC<SettingsPageProps> = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Full Name</label>
+                  <label htmlFor="settings-full-name" className="block text-xs font-medium text-slate-400 mb-1">Full Name</label>
                   <input
+                    id="settings-full-name"
                     type="text"
                     defaultValue={user?.name || 'Legal Analyst'}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-lexi-gold"
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:outline-none focus-visible:border-lexi-gold focus-visible:ring-2 focus-visible:ring-lexi-gold"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Email Address</label>
+                  <label htmlFor="settings-email" className="block text-xs font-medium text-slate-400 mb-1">Email Address</label>
                   <input
+                    id="settings-email"
                     type="email"
                     disabled
                     defaultValue={user?.email || 'counsel@institution.com'}
@@ -291,16 +296,18 @@ export const SettingsPage: React.FC<SettingsPageProps> = () => {
               </div>
 
               <div className="space-y-3 pt-2">
-                <label className="flex items-center justify-between p-4 bg-slate-950/80 rounded-xl border border-slate-800 cursor-pointer">
+                <label htmlFor="daily-digest" className="flex items-center justify-between p-4 bg-slate-950/80 rounded-xl border border-slate-800 cursor-pointer">
                   <div>
                     <div className="text-xs font-semibold text-white">Daily Digest of Expiring Contracts (&lt; 30 Days)</div>
                     <div className="text-[11px] text-slate-400">Receive morning summaries of critical auto-renewal opt-out deadlines.</div>
                   </div>
                   <input
+                    id="daily-digest"
+                    aria-label="Daily Digest of Expiring Contracts"
                     type="checkbox"
                     checked={emailAlerts}
                     onChange={(e) => setEmailAlerts(e.target.checked)}
-                    className="w-4 h-4 accent-lexi-gold rounded"
+                    className="w-4 h-4 accent-lexi-gold rounded focus-visible:ring-2 focus-visible:ring-lexi-gold focus:outline-none"
                   />
                 </label>
               </div>

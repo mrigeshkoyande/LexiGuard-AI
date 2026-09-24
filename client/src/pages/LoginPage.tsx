@@ -147,42 +147,44 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
             )}
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1.5 font-sans">
+              <label htmlFor="login-email" className="block text-xs font-medium text-slate-300 mb-1.5 font-sans">
                 Corporate or Personal Email
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" aria-hidden="true" />
                 <input
+                  id="login-email"
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="counsel@firm.com"
-                  className="w-full pl-10 pr-4 py-3 bg-slate-950/80 border border-slate-800 focus:border-lexi-gold/70 rounded-xl text-xs text-slate-100 placeholder-slate-500 focus:outline-none transition-all shadow-inner"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-950/80 border border-slate-800 focus:border-lexi-gold/70 rounded-xl text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-lexi-gold transition-all shadow-inner"
                 />
               </div>
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-medium text-slate-300 font-sans">Password</label>
+                <label htmlFor="login-password" className="block text-xs font-medium text-slate-300 font-sans">Password</label>
                 <button
                   type="button"
                   onClick={() => alert('Password reset link sent to registered email in production.')}
-                  className="text-[11px] text-lexi-gold hover:underline"
+                  className="text-[11px] text-lexi-gold hover:underline focus-visible:ring-2 focus-visible:ring-lexi-gold rounded-sm outline-none"
                 >
                   Forgot password?
                 </button>
               </div>
               <div className="relative">
-                <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" aria-hidden="true" />
                 <input
+                  id="login-password"
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full pl-10 pr-4 py-3 bg-slate-950/80 border border-slate-800 focus:border-lexi-gold/70 rounded-xl text-xs text-slate-100 placeholder-slate-500 focus:outline-none transition-all shadow-inner"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-950/80 border border-slate-800 focus:border-lexi-gold/70 rounded-xl text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-lexi-gold transition-all shadow-inner"
                 />
               </div>
             </div>
@@ -190,7 +192,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-3.5 rounded-xl bg-lexi-gold hover:bg-amber-600 text-lexi-midnight font-bold text-xs uppercase tracking-wider shadow-lg shadow-lexi-gold/20 transition-all flex items-center justify-center gap-2 active:scale-[0.99]"
+              className="w-full mt-2 py-3.5 rounded-xl bg-lexi-gold hover:bg-amber-600 text-lexi-midnight font-bold text-xs uppercase tracking-wider shadow-lg shadow-lexi-gold/20 transition-all flex items-center justify-center gap-2 active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-lexi-gold focus-visible:ring-offset-2 focus-visible:ring-offset-lexi-midnight"
             >
               <span>{loading ? 'Verifying Authorization...' : 'Access Workspace'}</span>
               <ArrowRight className="w-4 h-4" />
@@ -202,7 +204,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
               New to LexiGuard AI?{' '}
               <button
                 onClick={() => onNavigate('register')}
-                className="text-lexi-gold hover:underline font-semibold ml-1"
+                className="text-lexi-gold hover:underline font-semibold ml-1 focus-visible:ring-2 focus-visible:ring-lexi-gold rounded-sm outline-none"
               >
                 Create an Institutional Account
               </button>

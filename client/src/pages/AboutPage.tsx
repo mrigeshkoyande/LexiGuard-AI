@@ -41,7 +41,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             <div>
               <h3 className="text-base font-bold text-lexi-gold mb-1">2. Absolute Data Confidentiality is Non-Negotiable</h3>
               <p className="text-xs text-slate-400">
-                Legal contracts represent our users' most sensitive intellectual property and liabilities. We maintain a strict Zero-Retention policy with AES-256 vault encryption.
+                Legal contracts represent our users&apos; most sensitive intellectual property and liabilities. We maintain a strict Zero-Retention policy with AES-256 vault encryption.
               </p>
             </div>
 

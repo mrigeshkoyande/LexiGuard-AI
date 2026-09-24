@@ -87,7 +87,12 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuc
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-in fade-in duration-200"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    >
       <div className="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 overflow-hidden">
         {/* Background glow */}
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -99,14 +104,15 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuc
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-semibold text-white">Analyze Legal Document</h3>
+              <h3 id="modal-title" className="text-base font-semibold text-white">Analyze Legal Document</h3>
               <p className="text-xs text-slate-400">PDF, DOCX, or TXT up to 10MB</p>
             </div>
           </div>
           {stage === 'idle' || stage === 'error' ? (
             <button
               onClick={handleClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              aria-label="Close modal"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -119,6 +125,9 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuc
             <>
               {/* Dropzone */}
               <div
+                role="button"
+                tabIndex={0}
+                aria-label="Upload document area"
                 onDragOver={(e) => {
                   e.preventDefault();
                   setIsDragOver(true);
@@ -126,7 +135,13 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuc
                 onDragLeave={() => setIsDragOver(false)}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    fileInputRef.current?.click();
+                  }
+                }}
+                className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 ${
                   isDragOver
                     ? 'border-cyan-400 bg-cyan-950/20'
                     : file
@@ -135,11 +150,14 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuc
                 }`}
               >
                 <input
+                  id="document-upload"
                   type="file"
                   ref={fileInputRef}
                   onChange={(e) => e.target.files?.[0] && handleFileSelected(e.target.files[0])}
                   accept=".pdf,.docx,.txt"
                   className="hidden"
+                  aria-hidden="true"
+                  tabIndex={-1}
                 />
 
                 {file ? (
@@ -173,15 +191,16 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuc
 
               {/* Title input */}
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                <label htmlFor="document-title" className="block text-xs font-medium text-slate-300 mb-1.5">
                   Document Title (Optional)
                 </label>
                 <input
+                  id="document-title"
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Senior Software Engineer Employment Contract"
-                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus-visible:border-cyan-500 focus-visible:ring-2 focus-visible:ring-cyan-500 transition-colors"
                 />
               </div>
 
@@ -198,7 +217,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuc
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                  className="px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 transition-colors"
                 >
                   Cancel
                 </button>
@@ -219,7 +238,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuc
             </>
           ) : (
             /* Processing Stages */
-            <div className="py-6 space-y-6">
+            <div className="py-6 space-y-6" aria-live="polite">
               <div className="flex flex-col items-center justify-center text-center">
                 {stage === 'complete' ? (
                   <div className="w-14 h-14 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mb-3 animate-in zoom-in-75">

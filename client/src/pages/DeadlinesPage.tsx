@@ -26,10 +26,6 @@ export const DeadlinesPage: React.FC<DeadlinesPageProps> = ({ onNavigate }) => {
   const [filterType, setFilterType] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    loadDeadlines();
-  }, []);
-
   const loadDeadlines = async () => {
     setLoading(true);
     try {
@@ -92,6 +88,11 @@ export const DeadlinesPage: React.FC<DeadlinesPageProps> = ({ onNavigate }) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadDeadlines();
+  }, []);
 
   const filtered = deadlines.filter((item) => {
     if (filterType !== 'all' && item.type.toLowerCase() !== filterType.toLowerCase()) return false;
@@ -184,13 +185,15 @@ export const DeadlinesPage: React.FC<DeadlinesPageProps> = ({ onNavigate }) => {
         {/* Filters and Search */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-900/40 p-4 rounded-xl border border-slate-800">
           <div className="relative w-full sm:w-80">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" aria-hidden="true" />
             <input
+              id="deadlines-search"
               type="text"
               placeholder="Search obligations or contracts..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-lexi-gold"
+              aria-label="Search deadlines"
+              className="w-full pl-10 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-lexi-gold"
             />
           </div>
 
@@ -202,7 +205,8 @@ export const DeadlinesPage: React.FC<DeadlinesPageProps> = ({ onNavigate }) => {
               <button
                 key={t}
                 onClick={() => setFilterType(t)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all shrink-0 ${
+                aria-pressed={filterType.toLowerCase() === t.toLowerCase()}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-lexi-gold ${
                   filterType.toLowerCase() === t.toLowerCase()
                     ? 'bg-lexi-gold text-slate-950 font-bold shadow-md shadow-lexi-gold/20'
                     : 'bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-800'
@@ -262,7 +266,8 @@ export const DeadlinesPage: React.FC<DeadlinesPageProps> = ({ onNavigate }) => {
                     <span>Associated Contract:</span>
                     <button
                       onClick={() => onNavigate('workspace', item.docId)}
-                      className="text-lexi-gold hover:underline font-medium"
+                      aria-label={`Open contract ${item.docTitle}`}
+                      className="text-lexi-gold hover:underline font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-lexi-gold rounded-sm px-1"
                     >
                       {item.docTitle}
                     </button>

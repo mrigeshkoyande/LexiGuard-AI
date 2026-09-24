@@ -45,6 +45,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate, onOpen
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchDocuments();
   }, []);
 
@@ -164,7 +165,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate, onOpen
             </h2>
             <button
               onClick={fetchDocuments}
-              className="text-xs text-brand-sand hover:text-white flex items-center gap-1 transition-colors"
+              aria-label="Refresh documents list"
+              className="text-xs text-brand-sand hover:text-white flex items-center gap-1 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded-sm px-1"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               <span>Refresh</span>
@@ -200,10 +202,19 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate, onOpen
                   <div
                     key={doc.id}
                     onClick={() => onNavigate('workspace', doc.id)}
-                    className="p-5 rounded-xl bg-brand-midnight-card/90 hover:bg-brand-navy-light/60 border border-brand-gold/25 hover:border-brand-gold shadow-lg hover:shadow-gold-subtle transition-all duration-200 cursor-pointer flex flex-col justify-between group relative overflow-hidden"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onNavigate('workspace', doc.id);
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Open workspace for ${doc.title}`}
+                    className="p-5 rounded-xl bg-brand-midnight-card/90 hover:bg-brand-navy-light/60 border border-brand-gold/25 hover:border-brand-gold shadow-lg hover:shadow-gold-subtle transition-all duration-200 cursor-pointer flex flex-col justify-between group relative overflow-hidden text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
                   >
                     {isDemoDoc && (
-                      <div className="mb-2 px-2 py-0.5 rounded bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1 self-start">
+                      <div className="mb-2 px-2 py-0.5 rounded bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1 self-start" aria-hidden="true">
                         <span>★ Fictional Demo Document</span>
                       </div>
                     )}
@@ -223,7 +234,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate, onOpen
                             onClick={(e) => handleDelete(e, doc.id)}
                             disabled={deletingId === doc.id}
                             title="Delete Document"
-                            className="p-1.5 rounded-lg text-brand-sand hover:text-rose-400 hover:bg-brand-midnight transition-colors"
+                            aria-label={`Delete document ${doc.title}`}
+                            className="p-1.5 rounded-lg text-brand-sand hover:text-rose-400 hover:bg-brand-midnight transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -257,7 +269,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate, onOpen
                             e.stopPropagation();
                             onNavigate('action-brief', doc.id);
                           }}
-                          className="px-2.5 py-1 rounded bg-brand-navy border border-brand-gold/20 hover:border-brand-gold text-brand-warmwhite text-[11px] font-medium flex items-center gap-1 transition-colors"
+                          aria-label={`Open action brief for ${doc.title}`}
+                          className="px-2.5 py-1 rounded bg-brand-navy border border-brand-gold/20 hover:border-brand-gold text-brand-warmwhite text-[11px] font-medium flex items-center gap-1 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
                         >
                           <CheckSquare className="w-3 h-3 text-brand-gold" />
                           <span>Action Brief</span>
@@ -283,7 +296,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate, onOpen
                 <AlertTriangle className="w-4 h-4 text-amber-400" />
                 <span>Critical Review Areas</span>
               </h3>
-              <button onClick={() => onNavigate('deadlines')} className="text-[10px] text-brand-gold hover:underline">
+              <button 
+                onClick={() => onNavigate('deadlines')} 
+                className="text-[10px] text-brand-gold hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded-sm px-1"
+                aria-label="View all critical review areas"
+              >
                 View All
               </button>
             </div>
@@ -291,38 +308,65 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate, onOpen
             <div className="space-y-2.5">
               <div
                 onClick={() => documents[0] && onNavigate('workspace', documents[0].id)}
-                className="p-3 rounded-xl bg-brand-navy-dark border border-brand-gold/20 hover:border-brand-gold/50 cursor-pointer transition-colors flex items-start gap-3"
+                onKeyDown={(e) => {
+                  if ((e.key === 'Enter' || e.key === ' ') && documents[0]) {
+                    e.preventDefault();
+                    onNavigate('workspace', documents[0].id);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label="Review Automatic Renewal Notice"
+                className="p-3 rounded-xl bg-brand-navy-dark border border-brand-gold/20 hover:border-brand-gold/50 cursor-pointer transition-colors flex items-start gap-3 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
               >
-                <div className="w-2 h-2 rounded-full bg-rose-400 shrink-0 mt-1.5"></div>
+                <div className="w-2 h-2 rounded-full bg-rose-400 shrink-0 mt-1.5" aria-hidden="true"></div>
                 <div className="flex-1 text-xs">
                   <h5 className="font-semibold text-brand-warmwhite">Automatic Renewal Notice</h5>
                   <p className="text-brand-sand/70 text-[11px] mt-0.5">Requires 90-day non-renewal notice before expiration</p>
                 </div>
-                <ChevronRight className="w-4 h-4 text-brand-sand/50 shrink-0" />
+                <ChevronRight className="w-4 h-4 text-brand-sand/50 shrink-0" aria-hidden="true" />
               </div>
 
               <div
                 onClick={() => documents[0] && onNavigate('workspace', documents[0].id)}
-                className="p-3 rounded-xl bg-brand-navy-dark border border-brand-gold/20 hover:border-brand-gold/50 cursor-pointer transition-colors flex items-start gap-3"
+                onKeyDown={(e) => {
+                  if ((e.key === 'Enter' || e.key === ' ') && documents[0]) {
+                    e.preventDefault();
+                    onNavigate('workspace', documents[0].id);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label="Review Broad Indemnification Scope"
+                className="p-3 rounded-xl bg-brand-navy-dark border border-brand-gold/20 hover:border-brand-gold/50 cursor-pointer transition-colors flex items-start gap-3 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
               >
-                <div className="w-2 h-2 rounded-full bg-amber-400 shrink-0 mt-1.5"></div>
+                <div className="w-2 h-2 rounded-full bg-amber-400 shrink-0 mt-1.5" aria-hidden="true"></div>
                 <div className="flex-1 text-xs">
                   <h5 className="font-semibold text-brand-warmwhite">Broad Indemnification Scope</h5>
                   <p className="text-brand-sand/70 text-[11px] mt-0.5">Review liability caps and third-party claims exposure</p>
                 </div>
-                <ChevronRight className="w-4 h-4 text-brand-sand/50 shrink-0" />
+                <ChevronRight className="w-4 h-4 text-brand-sand/50 shrink-0" aria-hidden="true" />
               </div>
 
               <div
                 onClick={() => documents[0] && onNavigate('workspace', documents[0].id)}
-                className="p-3 rounded-xl bg-brand-navy-dark border border-brand-gold/20 hover:border-brand-gold/50 cursor-pointer transition-colors flex items-start gap-3"
+                onKeyDown={(e) => {
+                  if ((e.key === 'Enter' || e.key === ' ') && documents[0]) {
+                    e.preventDefault();
+                    onNavigate('workspace', documents[0].id);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label="Review IP and Invention Assignment"
+                className="p-3 rounded-xl bg-brand-navy-dark border border-brand-gold/20 hover:border-brand-gold/50 cursor-pointer transition-colors flex items-start gap-3 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
               >
-                <div className="w-2 h-2 rounded-full bg-cyan-400 shrink-0 mt-1.5"></div>
+                <div className="w-2 h-2 rounded-full bg-cyan-400 shrink-0 mt-1.5" aria-hidden="true"></div>
                 <div className="flex-1 text-xs">
                   <h5 className="font-semibold text-brand-warmwhite">IP & Invention Assignment</h5>
                   <p className="text-brand-sand/70 text-[11px] mt-0.5">Confirms intellectual property allocation to client</p>
                 </div>
-                <ChevronRight className="w-4 h-4 text-brand-sand/50 shrink-0" />
+                <ChevronRight className="w-4 h-4 text-brand-sand/50 shrink-0" aria-hidden="true" />
               </div>
             </div>
           </div>

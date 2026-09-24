@@ -24,7 +24,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const res = await api.getCurrentUser();
           setUser(res.user);
         }
-      } catch (err) {
+      } catch {
         api.setToken(null);
         setUser(null);
       } finally {

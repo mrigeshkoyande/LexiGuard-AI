@@ -20,7 +20,12 @@ export const ClauseDetailDrawer: React.FC<ClauseDetailDrawerProps> = ({
   if (!isOpen || !clause) return null;
 
   return (
-    <div className="fixed inset-y-0 right-0 z-50 w-full max-w-lg bg-brand-midnight-card border-l border-brand-gold/30 shadow-2xl backdrop-blur-2xl flex flex-col animate-in slide-in-from-right duration-300">
+    <div 
+      role="dialog" 
+      aria-modal="true" 
+      aria-labelledby="clause-drawer-title"
+      className="fixed inset-y-0 right-0 z-50 w-full max-w-lg bg-brand-midnight-card border-l border-brand-gold/30 shadow-2xl backdrop-blur-2xl flex flex-col animate-in slide-in-from-right duration-300"
+    >
       {/* Drawer Header */}
       <div className="p-5 border-b border-brand-gold/20 bg-brand-navy-dark flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -29,7 +34,8 @@ export const ClauseDetailDrawer: React.FC<ClauseDetailDrawerProps> = ({
         </div>
         <button
           onClick={onClose}
-          className="p-1.5 rounded-lg text-brand-sand hover:text-white hover:bg-brand-midnight transition-colors"
+          aria-label="Close clause details"
+          className="p-1.5 rounded-lg text-brand-sand hover:text-white hover:bg-brand-midnight transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
         >
           <X className="w-5 h-5" />
         </button>
@@ -40,7 +46,7 @@ export const ClauseDetailDrawer: React.FC<ClauseDetailDrawerProps> = ({
         {/* Title */}
         <div>
           <span className="text-[10px] uppercase font-bold text-brand-gold tracking-widest block mb-1">Provision Title</span>
-          <h3 className="font-headline text-2xl text-brand-warmwhite font-light">{clause.title}</h3>
+          <h3 id="clause-drawer-title" className="font-headline text-2xl text-brand-warmwhite font-light">{clause.title}</h3>
         </div>
 
         {/* Original Legal Clause Text */}

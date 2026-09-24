@@ -116,8 +116,9 @@ export const WorkspacePage: React.FC<WorkspacePageProps> = ({ documentId, onNavi
         <div className="flex items-center gap-3 min-w-0">
           <button
             onClick={() => onNavigate('dashboard')}
-            className="p-1.5 rounded-lg text-brand-sand hover:text-white hover:bg-brand-navy-dark transition-colors"
+            className="p-1.5 rounded-lg text-brand-sand hover:text-white hover:bg-brand-navy-dark transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
             title="Back to Dashboard"
+            aria-label="Back to Dashboard"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
@@ -165,8 +166,9 @@ export const WorkspacePage: React.FC<WorkspacePageProps> = ({ documentId, onNavi
           <button
             onClick={handleReanalyze}
             disabled={reanalyzing}
-            className="p-2 rounded-lg bg-brand-navy-dark hover:bg-brand-navy border border-brand-gold/20 text-brand-sand hover:text-brand-gold transition-colors"
+            className="p-2 rounded-lg bg-brand-navy-dark hover:bg-brand-navy border border-brand-gold/20 text-brand-sand hover:text-brand-gold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
             title="Re-run AI Analysis"
+            aria-label="Re-run AI Analysis"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${reanalyzing ? 'animate-spin text-brand-gold' : ''}`} />
           </button>
@@ -201,7 +203,7 @@ export const WorkspacePage: React.FC<WorkspacePageProps> = ({ documentId, onNavi
         clause={selectedDrawerClause}
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
-        onAskLexi={(_query) => {
+        onAskLexi={() => {
           onNavigate('ask');
         }}
       />

@@ -35,7 +35,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenUplo
         await demoLogin();
       }
       onNavigate('dashboard');
-    } catch (err) {
+    } catch {
       onNavigate('login');
     }
   };
@@ -201,7 +201,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenUplo
                     </span>
                   </div>
                   <p className="font-serif italic text-slate-800 dark:text-slate-100 leading-relaxed text-xs sm:text-sm">
-                    "{activeDoc.text}"
+                    &quot;{activeDoc.text}&quot;
                   </p>
                 </div>
               </div>
@@ -422,7 +422,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenUplo
               <span className="px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400">Baseline</span>
             </div>
             <div className="p-4 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-serif leading-relaxed text-slate-700 dark:text-slate-300">
-              "Total cumulative liability under this Agreement shall in no event exceed the total fees actually paid by Client in the preceding twelve (12) month period."
+              &quot;Total cumulative liability under this Agreement shall in no event exceed the total fees actually paid by Client in the preceding twelve (12) month period.&quot;
             </div>
             <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-mono font-medium">
               ✓ Standard 12-Month Cap
@@ -436,7 +436,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenUplo
               <span className="px-2 py-0.5 rounded bg-rose-500/20 text-rose-500 border border-rose-500/30 font-bold">High Risk Shift</span>
             </div>
             <div className="p-4 rounded-xl bg-white dark:bg-slate-950 border border-rose-500/30 text-xs font-serif leading-relaxed text-slate-700 dark:text-slate-300">
-              "Total cumulative liability shall not exceed <span className="line-through text-rose-400 bg-rose-500/10 px-1">twelve (12) months fees</span> <span className="text-emerald-400 bg-emerald-500/10 px-1 font-bold">ten million dollars ($10,000,000)</span>, excluding claims arising under Section 8 (Indemnification)."
+              &quot;Total cumulative liability shall not exceed <span className="line-through text-rose-400 bg-rose-500/10 px-1">twelve (12) months fees</span> <span className="text-emerald-400 bg-emerald-500/10 px-1 font-bold">ten million dollars ($10,000,000)</span>, excluding claims arising under Section 8 (Indemnification).&quot;
             </div>
             <div className="text-[11px] text-rose-500 font-mono font-bold">
               ⚠️ Liability cap increased from $150k to $10M + indemnity carve-out
@@ -465,7 +465,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenUplo
                 >
                   <button
                     onClick={() => setActiveFaq(isOpen ? null : idx)}
-                    className="w-full p-5 text-left flex items-center justify-between gap-4 hover:bg-slate-50 dark:hover:bg-brand-navy/40 transition-colors"
+                    aria-expanded={isOpen}
+                    aria-controls={`faq-answer-${idx}`}
+                    id={`faq-button-${idx}`}
+                    className="w-full p-5 text-left flex items-center justify-between gap-4 hover:bg-slate-50 dark:hover:bg-brand-navy/40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
                   >
                     <span className="text-sm font-bold text-slate-900 dark:text-white font-serif">{faq.q}</span>
                     {isOpen ? (
@@ -475,7 +478,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenUplo
                     )}
                   </button>
                   {isOpen && (
-                    <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-600 dark:text-brand-sand/85 leading-relaxed border-t border-slate-100 dark:border-brand-gold/15">
+                    <div 
+                      id={`faq-answer-${idx}`} 
+                      role="region" 
+                      aria-labelledby={`faq-button-${idx}`} 
+                      className="px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-600 dark:text-brand-sand/85 leading-relaxed border-t border-slate-100 dark:border-brand-gold/15"
+                    >
                       {faq.a}
                     </div>
                   )}

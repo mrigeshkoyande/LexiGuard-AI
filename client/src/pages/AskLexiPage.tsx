@@ -148,13 +148,14 @@ export const AskLexiPage: React.FC<AskLexiPageProps> = ({ documentId, onNavigate
 
         {/* Document Selector */}
         <div className="w-full sm:w-72">
-          <label className="block text-[10px] font-bold uppercase text-brand-gold tracking-wider mb-1">
+          <label htmlFor="active-contract" className="block text-[10px] font-bold uppercase text-brand-gold tracking-wider mb-1">
             Active Contract
           </label>
           <select
+            id="active-contract"
             value={selectedDocId}
             onChange={(e) => setSelectedDocId(e.target.value)}
-            className="w-full px-3 py-2 bg-brand-midnight-card border border-brand-gold/30 rounded-xl text-xs text-brand-warmwhite focus:outline-none focus:border-brand-gold"
+            className="w-full px-3 py-2 bg-brand-midnight-card border border-brand-gold/30 rounded-xl text-xs text-brand-warmwhite focus:outline-none focus:border-brand-gold focus-visible:ring-2 focus-visible:ring-brand-gold"
           >
             {documents.map((d) => (
               <option key={d.id} value={d.id}>
@@ -180,7 +181,7 @@ export const AskLexiPage: React.FC<AskLexiPageProps> = ({ documentId, onNavigate
                 </div>
                 <div>
                   <h3 className="font-headline text-xl text-brand-warmwhite font-light">
-                    Ask anything about "{selectedDoc?.title || 'your contract'}"
+                    Ask anything about &quot;{selectedDoc?.title || 'your contract'}&quot;
                   </h3>
                   <p className="text-xs text-brand-sand/80 mt-1">
                     Every answer is strictly grounded in candidate clauses with verified source citations. Lexi abstains if the terms are not in the document.
@@ -260,7 +261,7 @@ export const AskLexiPage: React.FC<AskLexiPageProps> = ({ documentId, onNavigate
                                   </button>
                                 </div>
                                 <p className="text-[11px] text-brand-sand/90 italic line-clamp-3">
-                                  "{s.excerpt}"
+                                  &quot;{s.excerpt}&quot;
                                 </p>
                               </div>
                             ))}

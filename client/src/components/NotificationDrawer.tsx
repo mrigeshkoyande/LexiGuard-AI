@@ -107,10 +107,16 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
   });
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden">
+    <div 
+      className="fixed inset-0 z-50 overflow-hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Compliance and Alerts Hub"
+    >
       {/* Backdrop */}
       <div
         onClick={onClose}
+        aria-hidden="true"
         className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm transition-opacity animate-fade-in"
       />
 
@@ -139,7 +145,8 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
 
             <button
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg transition-colors"
+              aria-label="Close alerts"
+              className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
             >
               <X className="w-5 h-5" />
             </button>
@@ -157,7 +164,8 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
                 <button
                   key={tab.id}
                   onClick={() => setActiveFilter(tab.id as any)}
-                  className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
+                  aria-pressed={activeFilter === tab.id}
+                  className={`px-2.5 py-1 rounded-lg font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${
                     activeFilter === tab.id
                       ? 'bg-brand-gold text-white dark:text-slate-950 font-bold shadow-sm'
                       : 'text-slate-600 dark:text-brand-sand/70 hover:bg-slate-200 dark:hover:bg-brand-navy/60'
@@ -173,7 +181,8 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
                 <button
                   onClick={markAllAsRead}
                   title="Mark all as read"
-                  className="p-1.5 text-slate-500 dark:text-brand-sand/70 hover:text-brand-gold transition-colors text-xs flex items-center gap-1"
+                  aria-label="Mark all as read"
+                  className="p-1.5 text-slate-500 dark:text-brand-sand/70 hover:text-brand-gold transition-colors text-xs flex items-center gap-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded"
                 >
                   <CheckCheck className="w-3.5 h-3.5" />
                 </button>
@@ -182,7 +191,8 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
                 <button
                   onClick={clearAll}
                   title="Clear all alerts"
-                  className="p-1.5 text-slate-500 dark:text-brand-sand/70 hover:text-rose-400 transition-colors text-xs"
+                  aria-label="Clear all alerts"
+                  className="p-1.5 text-slate-500 dark:text-brand-sand/70 hover:text-rose-400 transition-colors text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
@@ -207,7 +217,13 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
                 <div
                   key={item.id}
                   onClick={() => markAsRead(item.id)}
-                  className={`p-4 rounded-xl border transition-all relative ${
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') markAsRead(item.id);
+                  }}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`Mark ${item.title} as read`}
+                  className={`p-4 rounded-xl border transition-all relative focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${
                     item.read
                       ? 'bg-slate-50 dark:bg-brand-midnight/60 border-slate-200 dark:border-brand-gold/15 opacity-85'
                       : 'bg-white dark:bg-brand-midnight border-brand-gold/40 shadow-md ring-1 ring-brand-gold/20'
@@ -248,7 +264,8 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
                           e.stopPropagation();
                           removeNotification(item.id);
                         }}
-                        className="text-slate-400 hover:text-rose-400 p-0.5 rounded transition-colors"
+                        aria-label={`Remove notification ${item.title}`}
+                        className="text-slate-400 hover:text-rose-400 p-0.5 rounded transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
                       >
                         <X className="w-3 h-3" />
                       </button>
@@ -268,7 +285,8 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
                           onClose();
                           onNavigate('workspace', item.docId);
                         }}
-                        className="text-[11px] text-brand-gold hover:underline font-semibold flex items-center gap-1"
+                        aria-label={`Open document workspace for ${item.title}`}
+                        className="text-[11px] text-brand-gold hover:underline font-semibold flex items-center gap-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded-sm"
                       >
                         <span>Open Document Workspace</span>
                         <ExternalLink className="w-3 h-3" />

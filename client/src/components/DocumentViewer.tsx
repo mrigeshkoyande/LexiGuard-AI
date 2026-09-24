@@ -67,13 +67,15 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
         <div className="flex items-center gap-2">
           {/* Search inside document */}
           <div className="relative w-40 sm:w-48">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-brand-gold" />
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-brand-gold" aria-hidden="true" />
             <input
+              id="document-viewer-search"
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Filter clauses..."
-              className="w-full pl-8 pr-3 py-1.5 bg-brand-midnight border border-brand-gold/20 rounded-lg text-xs text-brand-warmwhite placeholder:text-brand-sand/40 focus:outline-none focus:border-brand-gold/60"
+              aria-label="Filter clauses"
+              className="w-full pl-8 pr-3 py-1.5 bg-brand-midnight border border-brand-gold/20 rounded-lg text-xs text-brand-warmwhite placeholder:text-brand-sand/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
             />
           </div>
 
@@ -81,16 +83,18 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
           <div className="hidden sm:flex items-center gap-1 bg-brand-midnight p-1 rounded-lg border border-brand-gold/20 text-brand-sand">
             <button
               onClick={() => setZoomLevel((z) => Math.max(80, z - 10))}
-              className="p-1 hover:text-brand-warmwhite transition-colors"
+              className="p-1 hover:text-brand-warmwhite transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded-sm"
               title="Zoom Out"
+              aria-label="Zoom Out"
             >
               <ZoomOut className="w-3.5 h-3.5" />
             </button>
             <span className="text-[10px] font-mono px-1 text-brand-gold">{zoomLevel}%</span>
             <button
               onClick={() => setZoomLevel((z) => Math.min(140, z + 10))}
-              className="p-1 hover:text-brand-warmwhite transition-colors"
+              className="p-1 hover:text-brand-warmwhite transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded-sm"
               title="Zoom In"
+              aria-label="Zoom In"
             >
               <ZoomIn className="w-3.5 h-3.5" />
             </button>
@@ -99,8 +103,9 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
           {/* Print button */}
           <button
             onClick={handlePrint}
-            className="p-2 rounded-lg bg-brand-midnight border border-brand-gold/20 text-brand-sand hover:text-brand-gold transition-colors"
+            className="p-2 rounded-lg bg-brand-midnight border border-brand-gold/20 text-brand-sand hover:text-brand-gold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
             title="Print Document"
+            aria-label="Print Document"
           >
             <Printer className="w-4 h-4" />
           </button>
@@ -146,7 +151,17 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
                           onSelectClause?.(clause);
                           onOpenClauseDrawer?.(clause);
                         }}
-                        className={`p-4 rounded-xl border transition-all duration-300 cursor-pointer text-left relative group ${
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            onSelectClause?.(clause);
+                            onOpenClauseDrawer?.(clause);
+                          }
+                        }}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`View details for clause ${clause.number}: ${clause.title}`}
+                        className={`p-4 rounded-xl border transition-all duration-300 cursor-pointer text-left relative group focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${
                           isHighlighted
                             ? 'clause-active-pulse border-brand-gold shadow-lg ring-1 ring-brand-gold'
                             : 'bg-brand-midnight-card/80 border-brand-gold/15 hover:border-brand-gold/40 hover:bg-brand-navy-dark/70'

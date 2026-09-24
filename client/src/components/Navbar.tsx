@@ -39,9 +39,10 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className="sticky top-0 z-40 bg-white/90 dark:bg-brand-midnight/90 backdrop-blur-xl border-b border-slate-200 dark:border-brand-gold/20 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand Logo */}
-        <div
+        <button
           onClick={() => onNavigate?.(user ? 'dashboard' : 'landing')}
-          className="flex items-center gap-3 cursor-pointer group"
+          className="flex items-center gap-3 cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded-xl p-1"
+          aria-label="Home"
         >
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-gold via-brand-gold-light to-brand-navy p-0.5 shadow-md shadow-brand-gold/15 group-hover:scale-105 transition-transform">
             <div className="w-full h-full bg-white dark:bg-brand-midnight rounded-[10px] flex items-center justify-center">
@@ -61,14 +62,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               Legal Intelligence
             </p>
           </div>
-        </div>
+        </button>
 
         {/* Navigation Links */}
         {user ? (
           <nav className="hidden lg:flex items-center gap-1 bg-slate-100 dark:bg-brand-navy-dark/90 p-1 rounded-xl border border-slate-200 dark:border-brand-gold/20">
             <button
               onClick={() => onNavigate?.('dashboard')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${
                 currentView === 'dashboard'
                   ? 'bg-brand-gold text-white dark:text-brand-midnight font-bold shadow-sm'
                   : 'text-slate-600 dark:text-brand-sand hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-brand-navy/60'
@@ -79,7 +80,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
             <button
               onClick={() => onNavigate?.('documents')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${
                 currentView === 'documents'
                   ? 'bg-brand-gold text-white dark:text-brand-midnight font-bold shadow-sm'
                   : 'text-slate-600 dark:text-brand-sand hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-brand-navy/60'
@@ -90,7 +91,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
             <button
               onClick={() => onNavigate?.('compare')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${
                 currentView === 'compare'
                   ? 'bg-brand-gold text-white dark:text-brand-midnight font-bold shadow-sm'
                   : 'text-slate-600 dark:text-brand-sand hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-brand-navy/60'
@@ -101,7 +102,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
             <button
               onClick={() => onNavigate?.('ask')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${
                 currentView === 'ask'
                   ? 'bg-brand-gold text-white dark:text-brand-midnight font-bold shadow-sm'
                   : 'text-slate-600 dark:text-brand-sand hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-brand-navy/60'
@@ -112,7 +113,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
             <button
               onClick={() => onNavigate?.('deadlines')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${
                 currentView === 'deadlines'
                   ? 'bg-brand-gold text-white dark:text-brand-midnight font-bold shadow-sm'
                   : 'text-slate-600 dark:text-brand-sand hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-brand-navy/60'
@@ -124,10 +125,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
         ) : (
           <nav className="hidden md:flex items-center gap-6 text-xs text-slate-600 dark:text-brand-sand font-medium">
-            <button onClick={() => onNavigate?.('features')} className="hover:text-brand-gold transition-colors">Features</button>
-            <button onClick={() => onNavigate?.('how-it-works')} className="hover:text-brand-gold transition-colors">How It Works</button>
-            <button onClick={() => onNavigate?.('solutions')} className="hover:text-brand-gold transition-colors">Solutions</button>
-            <button onClick={() => onNavigate?.('about')} className="hover:text-brand-gold transition-colors">About</button>
+            <button onClick={() => onNavigate?.('features')} className="hover:text-brand-gold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded-sm px-1">Features</button>
+            <button onClick={() => onNavigate?.('how-it-works')} className="hover:text-brand-gold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded-sm px-1">How It Works</button>
+            <button onClick={() => onNavigate?.('solutions')} className="hover:text-brand-gold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded-sm px-1">Solutions</button>
+            <button onClick={() => onNavigate?.('about')} className="hover:text-brand-gold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded-sm px-1">About</button>
           </nav>
         )}
 
@@ -151,8 +152,9 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Theme Toggler (Dark / Light) */}
           <button
             onClick={toggleTheme}
+            aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             title={theme === 'dark' ? 'Switch to Editorial Light Mode' : 'Switch to Midnight Dark Mode'}
-            className="p-2 rounded-xl bg-slate-100 dark:bg-brand-navy-dark/90 hover:bg-slate-200 dark:hover:bg-brand-navy border border-slate-200 dark:border-brand-gold/20 text-brand-gold transition-colors active:scale-95"
+            className="p-2 rounded-xl bg-slate-100 dark:bg-brand-navy-dark/90 hover:bg-slate-200 dark:hover:bg-brand-navy border border-slate-200 dark:border-brand-gold/20 text-brand-gold transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
           >
             {theme === 'dark' ? (
               <Sun className="w-4 h-4 text-amber-300 transition-transform hover:rotate-45" />
@@ -165,8 +167,9 @@ export const Navbar: React.FC<NavbarProps> = ({
           {onOpenNotifications && (
             <button
               onClick={onOpenNotifications}
+              aria-label="Open notifications"
               title="Compliance, Warnings & Deadlines Hub"
-              className="relative p-2 rounded-xl bg-slate-100 dark:bg-brand-navy-dark/90 hover:bg-slate-200 dark:hover:bg-brand-navy border border-slate-200 dark:border-brand-gold/20 text-slate-700 dark:text-brand-sand hover:text-brand-gold transition-colors active:scale-95"
+              className="relative p-2 rounded-xl bg-slate-100 dark:bg-brand-navy-dark/90 hover:bg-slate-200 dark:hover:bg-brand-navy border border-slate-200 dark:border-brand-gold/20 text-slate-700 dark:text-brand-sand hover:text-brand-gold transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
             >
               <Bell className="w-4 h-4 text-brand-gold" />
               {unreadCount > 0 && (
@@ -201,8 +204,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
                 <button
                   onClick={logout}
+                  aria-label="Sign Out"
                   title="Sign Out"
-                  className="p-2 rounded-xl bg-slate-100 dark:bg-brand-navy-dark hover:bg-slate-200 dark:hover:bg-brand-navy text-slate-600 dark:text-brand-sand hover:text-rose-400 border border-slate-200 dark:border-brand-gold/20 transition-colors"
+                  className="p-2 rounded-xl bg-slate-100 dark:bg-brand-navy-dark hover:bg-slate-200 dark:hover:bg-brand-navy text-slate-600 dark:text-brand-sand hover:text-rose-400 border border-slate-200 dark:border-brand-gold/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
                 >
                   <LogOut className="w-4 h-4" />
                 </button>
@@ -212,13 +216,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="flex items-center gap-2">
               <button
                 onClick={() => onNavigate?.('login')}
-                className="px-3.5 py-2 rounded-xl text-xs font-medium text-slate-700 dark:text-brand-sand hover:text-brand-gold transition-colors"
+                className="px-3.5 py-2 rounded-xl text-xs font-medium text-slate-700 dark:text-brand-sand hover:text-brand-gold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
               >
                 Sign In
               </button>
               <button
                 onClick={() => onNavigate?.('register')}
-                className="px-3.5 py-2 rounded-xl bg-brand-gold hover:bg-brand-gold-light text-white dark:text-brand-midnight text-xs font-bold uppercase tracking-wider shadow-md transition-all"
+                className="px-3.5 py-2 rounded-xl bg-brand-gold hover:bg-brand-gold-light text-white dark:text-brand-midnight text-xs font-bold uppercase tracking-wider shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2 focus-visible:ring-offset-brand-midnight"
               >
                 Get Started
               </button>

@@ -20,7 +20,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        isOpen ? onClose() : undefined; // handled in App shell
+        if (isOpen) onClose();
       }
       if (e.key === 'Escape' && isOpen) {
         onClose();
@@ -111,20 +111,32 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-24 px-4 bg-brand-midnight/80 backdrop-blur-md animate-in fade-in duration-200">
+    <div 
+      className="fixed inset-0 z-50 flex items-start justify-center pt-24 px-4 bg-brand-midnight/80 backdrop-blur-md animate-in fade-in duration-200"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Command Palette"
+    >
       <div className="w-full max-w-xl bg-brand-midnight-card border border-brand-gold/40 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
         {/* Search Input Bar */}
         <div className="flex items-center px-4 py-3.5 border-b border-brand-gold/20 gap-3">
-          <Search className="w-5 h-5 text-brand-gold" />
+          <Search className="w-5 h-5 text-brand-gold" aria-hidden="true" />
           <input
+            id="command-palette-search"
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Type a command or search documents (e.g. Compare, Ask, Upload)..."
-            className="flex-1 bg-transparent text-sm text-brand-warmwhite placeholder:text-brand-sand/50 focus:outline-none"
+            aria-label="Search command palette"
+            className="flex-1 bg-transparent text-sm text-brand-warmwhite placeholder:text-brand-sand/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded-sm px-1"
+            // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
           />
-          <button onClick={onClose} className="text-brand-sand hover:text-white">
+          <button 
+            onClick={onClose} 
+            aria-label="Close command palette"
+            className="text-brand-sand hover:text-white p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded-lg"
+          >
             <X className="w-4 h-4" />
           </button>
         </div>

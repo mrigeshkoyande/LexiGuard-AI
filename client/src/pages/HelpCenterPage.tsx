@@ -80,7 +80,15 @@ export const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ onNavigate }) =>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div
             onClick={() => onNavigate('workspace')}
-            className="bg-slate-900/60 border border-slate-800 hover:border-lexi-gold/40 p-6 rounded-2xl cursor-pointer transition-all hover:shadow-xl group"
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onNavigate('workspace');
+              }
+            }}
+            className="bg-slate-900/60 border border-slate-800 hover:border-lexi-gold/40 p-6 rounded-2xl cursor-pointer transition-all hover:shadow-xl group focus:outline-none focus-visible:ring-2 focus-visible:ring-lexi-gold"
           >
             <div className="w-10 h-10 rounded-xl bg-lexi-gold/10 border border-lexi-gold/30 text-lexi-gold flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
               <BookOpen className="w-5 h-5" />
@@ -95,7 +103,15 @@ export const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ onNavigate }) =>
 
           <div
             onClick={() => onNavigate('ask')}
-            className="bg-slate-900/60 border border-slate-800 hover:border-lexi-gold/40 p-6 rounded-2xl cursor-pointer transition-all hover:shadow-xl group"
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onNavigate('ask');
+              }
+            }}
+            className="bg-slate-900/60 border border-slate-800 hover:border-lexi-gold/40 p-6 rounded-2xl cursor-pointer transition-all hover:shadow-xl group focus:outline-none focus-visible:ring-2 focus-visible:ring-lexi-gold"
           >
             <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-400 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
               <MessageSquare className="w-5 h-5" />
@@ -110,7 +126,15 @@ export const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ onNavigate }) =>
 
           <div
             onClick={() => onNavigate('privacy')}
-            className="bg-slate-900/60 border border-slate-800 hover:border-lexi-gold/40 p-6 rounded-2xl cursor-pointer transition-all hover:shadow-xl group"
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onNavigate('privacy');
+              }
+            }}
+            className="bg-slate-900/60 border border-slate-800 hover:border-lexi-gold/40 p-6 rounded-2xl cursor-pointer transition-all hover:shadow-xl group focus:outline-none focus-visible:ring-2 focus-visible:ring-lexi-gold"
           >
             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
               <FileCode className="w-5 h-5" />

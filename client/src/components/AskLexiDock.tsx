@@ -91,7 +91,17 @@ export const AskLexiDock: React.FC<AskLexiDockProps> = ({ documentId, onSelectCl
       {/* Dock Header */}
       <div
         onClick={() => setIsOpen(!isOpen)}
-        className="p-3.5 bg-brand-navy-dark border-b border-brand-gold/20 flex items-center justify-between cursor-pointer select-none"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setIsOpen(!isOpen);
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-expanded={isOpen}
+        aria-label="Toggle Ask Lexi Dock"
+        className="p-3.5 bg-brand-navy-dark border-b border-brand-gold/20 flex items-center justify-between cursor-pointer select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
       >
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-brand-gold/20 border border-brand-gold/40 flex items-center justify-center text-brand-gold shadow-md">
@@ -108,9 +118,9 @@ export const AskLexiDock: React.FC<AskLexiDockProps> = ({ documentId, onSelectCl
           </div>
         </div>
 
-        <button className="p-1 rounded-lg text-brand-sand hover:text-white">
+        <div className="p-1 rounded-lg text-brand-sand hover:text-white" aria-hidden="true">
           {isOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
-        </button>
+        </div>
       </div>
 
       {/* Dock Body */}
@@ -122,7 +132,7 @@ export const AskLexiDock: React.FC<AskLexiDockProps> = ({ documentId, onSelectCl
               <div className="space-y-3">
                 <div className="p-3.5 rounded-xl bg-brand-navy-dark/80 border border-brand-gold/20 text-xs text-brand-sand/90 leading-relaxed">
                   <p className="font-semibold text-brand-gold mb-1 flex items-center gap-1.5">
-                    <Shield className="w-3.5 h-3.5" /> Hi, I'm Lexi!
+                    <Shield className="w-3.5 h-3.5" /> Hi, I&apos;m Lexi!
                   </p>
                   <p>
                     Ask any question about this agreement. Answers are strictly grounded in candidate clauses with verified source citations. Lexi abstains if the terms are not in the document.
@@ -138,7 +148,8 @@ export const AskLexiDock: React.FC<AskLexiDockProps> = ({ documentId, onSelectCl
                     <button
                       key={idx}
                       onClick={() => handleSend(q)}
-                      className="w-full text-left text-xs p-2.5 rounded-lg bg-brand-midnight border border-brand-gold/15 hover:border-brand-gold/50 text-brand-sand hover:text-brand-warmwhite transition-colors"
+                      aria-label={`Ask: ${q}`}
+                      className="w-full text-left text-xs p-2.5 rounded-lg bg-brand-midnight border border-brand-gold/15 hover:border-brand-gold/50 text-brand-sand hover:text-brand-warmwhite transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
                     >
                       {q}
                     </button>
@@ -209,13 +220,14 @@ export const AskLexiDock: React.FC<AskLexiDockProps> = ({ documentId, onSelectCl
                                 <button
                                   type="button"
                                   onClick={() => onSelectClauseId(s.sourceClauseId)}
-                                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-brand-gold/15 hover:bg-brand-gold/30 text-brand-gold-light transition-colors"
+                                  aria-label={`View source for ${s.clauseTitle || 'Clause'}`}
+                                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-brand-gold/15 hover:bg-brand-gold/30 text-brand-gold-light transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
                                 >
                                   <span>View</span>
                                   <ExternalLink className="w-2.5 h-2.5" />
                                 </button>
                               </div>
-                              <p className="text-brand-sand/80 italic line-clamp-2">"{s.excerpt}"</p>
+                              <p className="text-brand-sand/80 italic line-clamp-2">&quot;{s.excerpt}&quot;</p>
                             </div>
                           ))}
                         </div>
@@ -227,7 +239,8 @@ export const AskLexiDock: React.FC<AskLexiDockProps> = ({ documentId, onSelectCl
                               key={clauseId}
                               type="button"
                               onClick={() => onSelectClauseId(clauseId)}
-                              className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded bg-brand-gold/15 hover:bg-brand-gold/25 text-brand-gold-light border border-brand-gold/30 transition-colors"
+                              aria-label="View source clause"
+                              className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded bg-brand-gold/15 hover:bg-brand-gold/25 text-brand-gold-light border border-brand-gold/30 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
                             >
                               <span>§ View Clause</span>
                               <ExternalLink className="w-2.5 h-2.5" />
@@ -262,16 +275,19 @@ export const AskLexiDock: React.FC<AskLexiDockProps> = ({ documentId, onSelectCl
             className="p-2.5 bg-brand-navy-dark border-t border-brand-gold/20 flex items-center gap-2"
           >
             <input
+              id="ask-lexi-input"
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask a question about this contract..."
-              className="flex-1 px-3 py-2 bg-brand-midnight border border-brand-gold/20 rounded-xl text-xs text-brand-warmwhite placeholder:text-brand-sand/40 focus:outline-none focus:border-brand-gold/60 transition-colors"
+              aria-label="Ask Lexi a question"
+              className="flex-1 px-3 py-2 bg-brand-midnight border border-brand-gold/20 rounded-xl text-xs text-brand-warmwhite placeholder:text-brand-sand/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold transition-colors"
             />
             <button
               type="submit"
               disabled={!input.trim() || loading}
-              className={`p-2 rounded-xl text-brand-midnight font-bold transition-all ${
+              aria-label="Send query"
+              className={`p-2 rounded-xl text-brand-midnight font-bold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${
                 input.trim() && !loading
                   ? 'bg-brand-gold hover:bg-brand-gold-light cursor-pointer shadow-md'
                   : 'bg-brand-navy text-brand-sand/40 cursor-not-allowed'

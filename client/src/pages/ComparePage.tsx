@@ -116,13 +116,14 @@ export const ComparePage: React.FC<ComparePageProps> = ({ onNavigate }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Doc A */}
           <div>
-            <label className="block text-xs font-semibold text-brand-gold uppercase tracking-wider mb-1.5">
+            <label htmlFor="docA-select" className="block text-xs font-semibold text-brand-gold uppercase tracking-wider mb-1.5">
               Base Contract (Version A)
             </label>
             <select
+              id="docA-select"
               value={docAId}
               onChange={(e) => setDocAId(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-brand-midnight border border-brand-gold/20 rounded-xl text-xs text-brand-warmwhite focus:outline-none focus:border-brand-gold/60"
+              className="w-full px-3.5 py-2.5 bg-brand-midnight border border-brand-gold/20 rounded-xl text-xs text-brand-warmwhite focus:outline-none focus:border-brand-gold/60 focus-visible:ring-2 focus-visible:ring-brand-gold"
             >
               <option value="">Select Base Contract A...</option>
               {documents.map((d) => (
@@ -135,13 +136,14 @@ export const ComparePage: React.FC<ComparePageProps> = ({ onNavigate }) => {
 
           {/* Doc B */}
           <div>
-            <label className="block text-xs font-semibold text-brand-gold uppercase tracking-wider mb-1.5">
+            <label htmlFor="docB-select" className="block text-xs font-semibold text-brand-gold uppercase tracking-wider mb-1.5">
               Revised Counterpart (Version B)
             </label>
             <select
+              id="docB-select"
               value={docBId}
               onChange={(e) => setDocBId(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-brand-midnight border border-brand-gold/20 rounded-xl text-xs text-brand-warmwhite focus:outline-none focus:border-brand-gold/60"
+              className="w-full px-3.5 py-2.5 bg-brand-midnight border border-brand-gold/20 rounded-xl text-xs text-brand-warmwhite focus:outline-none focus:border-brand-gold/60 focus-visible:ring-2 focus-visible:ring-brand-gold"
             >
               <option value="">Select Revised Contract B...</option>
               {documents.map((d) => (

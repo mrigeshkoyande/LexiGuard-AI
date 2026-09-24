@@ -42,6 +42,7 @@ export const DocumentLibraryPage: React.FC<DocumentLibraryPageProps> = ({ onNavi
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchDocuments();
   }, []);
 
@@ -106,13 +107,15 @@ export const DocumentLibraryPage: React.FC<DocumentLibraryPageProps> = ({ onNavi
       <div className="p-4 rounded-xl bg-brand-midnight-card border border-brand-gold/20 flex flex-col md:flex-row gap-4 items-center justify-between shadow-navy-deep">
         {/* Search Input */}
         <div className="relative flex-1 w-full">
-          <Search className="w-4 h-4 text-brand-gold absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-brand-gold absolute left-3.5 top-1/2 -translate-y-1/2" aria-hidden="true" />
           <input
+            id="library-search"
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search contracts by title, keyword, or document type..."
-            className="w-full bg-brand-navy-dark border border-brand-gold/20 rounded-lg pl-10 pr-4 py-2 text-xs text-brand-warmwhite placeholder:text-brand-sand/50 focus:outline-none focus:border-brand-gold/60"
+            aria-label="Search documents"
+            className="w-full bg-brand-navy-dark border border-brand-gold/20 rounded-lg pl-10 pr-4 py-2 text-xs text-brand-warmwhite placeholder:text-brand-sand/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
           />
         </div>
 
@@ -122,7 +125,7 @@ export const DocumentLibraryPage: React.FC<DocumentLibraryPageProps> = ({ onNavi
             <button
               key={cat}
               onClick={() => setCategoryFilter(cat)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${
                 categoryFilter === cat
                   ? 'bg-brand-gold text-brand-midnight font-semibold'
                   : 'bg-brand-navy text-brand-sand hover:text-white'
@@ -137,14 +140,16 @@ export const DocumentLibraryPage: React.FC<DocumentLibraryPageProps> = ({ onNavi
         <div className="flex items-center gap-1 bg-brand-navy-dark p-1 rounded-lg border border-brand-gold/20 shrink-0">
           <button
             onClick={() => setViewMode('grid')}
-            className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-brand-gold/20 text-brand-gold' : 'text-brand-sand hover:text-white'}`}
+            aria-label="Grid view"
+            className={`p-1.5 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${viewMode === 'grid' ? 'bg-brand-gold/20 text-brand-gold' : 'text-brand-sand hover:text-white'}`}
             title="Grid View"
           >
             <LayoutGrid className="w-4 h-4" />
           </button>
           <button
             onClick={() => setViewMode('list')}
-            className={`p-1.5 rounded ${viewMode === 'list' ? 'bg-brand-gold/20 text-brand-gold' : 'text-brand-sand hover:text-white'}`}
+            aria-label="List view"
+            className={`p-1.5 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${viewMode === 'list' ? 'bg-brand-gold/20 text-brand-gold' : 'text-brand-sand hover:text-white'}`}
             title="List View"
           >
             <ListIcon className="w-4 h-4" />
@@ -170,7 +175,16 @@ export const DocumentLibraryPage: React.FC<DocumentLibraryPageProps> = ({ onNavi
             <div
               key={doc.id}
               onClick={() => onNavigate('workspace', doc.id)}
-              className="p-5 rounded-xl bg-brand-midnight-card border border-brand-gold/20 hover:border-brand-gold shadow-lg hover:shadow-gold-subtle transition-all duration-200 cursor-pointer flex flex-col justify-between group"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onNavigate('workspace', doc.id);
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              aria-label={`Open document ${doc.title}`}
+              className="p-5 rounded-xl bg-brand-midnight-card border border-brand-gold/20 hover:border-brand-gold shadow-lg hover:shadow-gold-subtle transition-all duration-200 cursor-pointer flex flex-col justify-between group focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold text-left"
             >
               <div>
                 <div className="flex justify-between items-start gap-2 mb-3">
@@ -220,7 +234,16 @@ export const DocumentLibraryPage: React.FC<DocumentLibraryPageProps> = ({ onNavi
                 <tr
                   key={doc.id}
                   onClick={() => onNavigate('workspace', doc.id)}
-                  className="hover:bg-brand-navy/40 cursor-pointer transition-colors"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onNavigate('workspace', doc.id);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Open document ${doc.title}`}
+                  className="hover:bg-brand-navy/40 cursor-pointer transition-colors focus:outline-none focus-visible:bg-brand-navy/60"
                 >
                   <td className="p-4 font-semibold text-brand-warmwhite flex items-center gap-2">
                     <FileText className="w-4 h-4 text-brand-gold shrink-0" />
@@ -236,7 +259,8 @@ export const DocumentLibraryPage: React.FC<DocumentLibraryPageProps> = ({ onNavi
                     <button
                       onClick={(e) => handleDelete(e, doc.id)}
                       disabled={deletingId === doc.id}
-                      className="p-1.5 text-brand-sand hover:text-rose-400 disabled:opacity-40 rounded transition-colors"
+                      aria-label={`Delete document ${doc.title}`}
+                      className="p-1.5 text-brand-sand hover:text-rose-400 disabled:opacity-40 rounded transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

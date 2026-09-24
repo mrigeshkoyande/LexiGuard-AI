@@ -222,7 +222,15 @@ export const ActionBriefPage: React.FC<ActionBriefPageProps> = ({ documentId, on
                   <div
                     key={item.id}
                     onClick={() => handleToggle(item)}
-                    className={`p-4 rounded-xl border transition-all duration-200 cursor-pointer flex items-start gap-3.5 select-none ${
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleToggle(item);
+                      }
+                    }}
+                    className={`p-4 rounded-xl border transition-all duration-200 cursor-pointer flex items-start gap-3.5 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${
                       item.isCompleted
                         ? 'bg-brand-midnight/40 border-brand-gold/10 opacity-60'
                         : 'bg-brand-midnight-card border-brand-gold/20 hover:border-brand-gold hover:bg-brand-navy-dark/60 shadow-md'

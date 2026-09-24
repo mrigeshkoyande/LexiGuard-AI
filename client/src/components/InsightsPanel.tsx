@@ -83,7 +83,7 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
   return (
     <div className="flex flex-col h-full bg-brand-midnight-card/90 border border-brand-gold/25 rounded-2xl overflow-hidden shadow-navy-deep backdrop-blur-md">
       {/* Tab Navigation */}
-      <div className="flex items-center gap-1 p-2 bg-brand-navy-dark border-b border-brand-gold/20 overflow-x-auto">
+      <div className="flex items-center gap-1 p-2 bg-brand-navy-dark border-b border-brand-gold/20 overflow-x-auto" role="tablist" aria-label="Insights tabs">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.key;
@@ -91,8 +91,12 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
           return (
             <button
               key={tab.key}
+              role="tab"
+              aria-selected={isActive}
+              aria-controls={`tabpanel-${tab.key}`}
+              id={`tab-${tab.key}`}
               onClick={() => setActiveTab(tab.key)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${
                 isActive
                   ? 'bg-brand-gold text-brand-midnight font-bold shadow-sm'
                   : 'text-brand-sand hover:text-white hover:bg-brand-navy/60'
@@ -115,7 +119,12 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
       </div>
 
       {/* Tab Content Body */}
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-brand-midnight/30">
+      <div 
+        id={`tabpanel-${activeTab}`} 
+        role="tabpanel" 
+        aria-labelledby={`tab-${activeTab}`} 
+        className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-brand-midnight/30"
+      >
         {activeTab === 'overview' ? (
           <div className="space-y-6">
             {/* Document Type Header Card */}
@@ -137,10 +146,19 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div
                 onClick={() => setActiveTab('potentialConcerns')}
-                className="p-3 rounded-xl bg-brand-midnight-card border border-brand-gold/20 hover:border-brand-gold cursor-pointer transition-colors"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setActiveTab('potentialConcerns');
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label="View Review Areas"
+                className="p-3 rounded-xl bg-brand-midnight-card border border-brand-gold/20 hover:border-brand-gold cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold text-left"
               >
                 <div className="flex items-center justify-between text-rose-400 mb-1">
-                  <ShieldAlert className="w-4 h-4" />
+                  <ShieldAlert className="w-4 h-4" aria-hidden="true" />
                   <span className="text-xs font-mono font-bold">
                     {analysis.potentialConcerns?.length || 0}
                   </span>
@@ -150,10 +168,19 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
 
               <div
                 onClick={() => setActiveTab('obligations')}
-                className="p-3 rounded-xl bg-brand-midnight-card border border-brand-gold/20 hover:border-brand-gold cursor-pointer transition-colors"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setActiveTab('obligations');
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label="View Obligations"
+                className="p-3 rounded-xl bg-brand-midnight-card border border-brand-gold/20 hover:border-brand-gold cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold text-left"
               >
                 <div className="flex items-center justify-between text-cyan-400 mb-1">
-                  <CheckCircle2 className="w-4 h-4" />
+                  <CheckCircle2 className="w-4 h-4" aria-hidden="true" />
                   <span className="text-xs font-mono font-bold">{analysis.obligations?.length || 0}</span>
                 </div>
                 <p className="text-[11px] font-medium text-brand-warmwhite">Obligations</p>
@@ -161,10 +188,19 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
 
               <div
                 onClick={() => setActiveTab('deadlines')}
-                className="p-3 rounded-xl bg-brand-midnight-card border border-brand-gold/20 hover:border-brand-gold cursor-pointer transition-colors"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setActiveTab('deadlines');
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label="View Dates"
+                className="p-3 rounded-xl bg-brand-midnight-card border border-brand-gold/20 hover:border-brand-gold cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold text-left"
               >
                 <div className="flex items-center justify-between text-amber-400 mb-1">
-                  <Clock className="w-4 h-4" />
+                  <Clock className="w-4 h-4" aria-hidden="true" />
                   <span className="text-xs font-mono font-bold">{analysis.deadlines?.length || 0}</span>
                 </div>
                 <p className="text-[11px] font-medium text-brand-warmwhite">Dates</p>
@@ -172,10 +208,19 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
 
               <div
                 onClick={() => setActiveTab('monetaryTerms')}
-                className="p-3 rounded-xl bg-brand-midnight-card border border-brand-gold/20 hover:border-brand-gold cursor-pointer transition-colors"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setActiveTab('monetaryTerms');
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label="View Financial Terms"
+                className="p-3 rounded-xl bg-brand-midnight-card border border-brand-gold/20 hover:border-brand-gold cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold text-left"
               >
                 <div className="flex items-center justify-between text-emerald-400 mb-1">
-                  <DollarSign className="w-4 h-4" />
+                  <DollarSign className="w-4 h-4" aria-hidden="true" />
                   <span className="text-xs font-mono font-bold">
                     {analysis.monetaryTerms?.length || 0}
                   </span>
@@ -216,7 +261,16 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
                   <div
                     key={item.id}
                     onClick={() => onSelectClauseId(item.sourceClauseId)}
-                    className={`p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer ${
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onSelectClauseId(item.sourceClauseId);
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Select clause: ${item.title}`}
+                    className={`p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${
                       isSelected
                         ? 'bg-brand-navy-dark border-brand-gold shadow-gold-glow ring-1 ring-brand-gold'
                         : 'bg-brand-midnight-card border-brand-gold/15 hover:border-brand-gold/40 hover:bg-brand-navy-dark/60'
@@ -240,7 +294,8 @@ export const InsightsPanel: React.FC<InsightsPanelProps> = ({
                           e.stopPropagation();
                           onSelectClauseId(item.sourceClauseId);
                         }}
-                        className="flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded bg-brand-gold/15 hover:bg-brand-gold/25 text-brand-gold-light border border-brand-gold/30 transition-colors shrink-0"
+                        aria-label={`View source for ${item.title}`}
+                        className="flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded bg-brand-gold/15 hover:bg-brand-gold/25 text-brand-gold-light border border-brand-gold/30 transition-colors shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
                       >
                         <span>View Source</span>
                         <ExternalLink className="w-3 h-3" />

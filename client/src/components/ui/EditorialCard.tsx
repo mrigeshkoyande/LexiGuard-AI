@@ -28,7 +28,15 @@ export const EditorialCard: React.FC<EditorialCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`rounded-xl p-6 relative overflow-hidden ${variantStyles[variant]} ${hoverStyles} ${className}`}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      className={`rounded-xl p-6 relative overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${variantStyles[variant]} ${hoverStyles} ${className}`}
     >
       {children}
     </div>
