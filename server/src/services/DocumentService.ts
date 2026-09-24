@@ -73,7 +73,9 @@ export class DocumentService {
     });
 
     if (!doc) {
-      throw new Error('Document not found');
+      const err: any = new Error('Document not found');
+      err.statusCode = 404;
+      throw err;
     }
 
     if (doc.userId !== userId) {
@@ -128,7 +130,6 @@ export class DocumentService {
         const sec = structure.sections[sIdx];
         const dbSection = await prisma.documentSection.create({
           data: {
-            id: sec.id.includes('-') && sec.id.length > 10 ? sec.id : undefined,
             documentId: doc.id,
             title: sec.title,
             orderIndex: sIdx
@@ -138,7 +139,6 @@ export class DocumentService {
         for (const cl of sec.clauses) {
           await prisma.documentClause.create({
             data: {
-              id: cl.id.includes('-') && cl.id.length > 10 ? cl.id : undefined,
               documentId: doc.id,
               sectionId: dbSection.id,
               number: cl.number,

@@ -39,6 +39,7 @@ export class QuestionAnsweringService {
         answer: DECLINED_ADVICE_RESPONSE,
         sourceClauseIds: [],
         confidence: 1.0,
+        supportStatus: 'INSUFFICIENT EVIDENCE',
         isDeclinedAdvice: true,
         matchedClauses: []
       };
@@ -85,6 +86,7 @@ export class QuestionAnsweringService {
         answer: noAnswerText,
         sourceClauseIds: [],
         confidence: 0.2,
+        supportStatus: 'INSUFFICIENT EVIDENCE',
         isDeclinedAdvice: false,
         matchedClauses: []
       };
@@ -102,6 +104,13 @@ export class QuestionAnsweringService {
     const fallbackSourceIds = verifiedSourceIds.length > 0 ? verifiedSourceIds : [relevantClauses[0].id];
 
     const primaryClause = clauses.find((c) => c.id === fallbackSourceIds[0]);
+
+    const isAbstaining = aiResult.answer.toLowerCase().includes("couldn't find") || aiResult.answer.toLowerCase().includes("does not specify");
+    const supportStatus = isAbstaining
+      ? 'INSUFFICIENT EVIDENCE'
+      : aiResult.confidence >= 0.8
+      ? 'SUPPORTED'
+      : 'PARTIALLY SUPPORTED';
 
     // 5. Persist Q&A record
     const qaRecord = await prisma.questionAnswer.create({
@@ -124,6 +133,7 @@ export class QuestionAnsweringService {
       sourceClauseIds: fallbackSourceIds,
       pageNumber: primaryClause?.page || 1,
       confidence: aiResult.confidence,
+      supportStatus,
       isDeclinedAdvice: false,
       matchedClauses: relevantClauses.map((c) => ({
         id: c.id,

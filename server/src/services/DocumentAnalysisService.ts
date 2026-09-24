@@ -31,6 +31,14 @@ export class DocumentAnalysisService {
       }
     });
 
+    // Fetch valid document clause IDs from DB
+    const dbClauses = await prisma.documentClause.findMany({
+      where: { documentId },
+      select: { id: true }
+    });
+    const validClauseIds = new Set(dbClauses.map((c) => c.id));
+    const firstClauseId = dbClauses[0]?.id;
+
     // Map all findings to DB
     const allFindings = [
       ...analysisResult.importantClauses,
@@ -43,11 +51,20 @@ export class DocumentAnalysisService {
     ];
 
     for (const finding of allFindings) {
+      const resolvedClauseId = validClauseIds.has(finding.sourceClauseId)
+        ? finding.sourceClauseId
+        : firstClauseId;
+
+      if (!resolvedClauseId) {
+        // Skip finding creation if document has no clauses (e.g. completely empty document)
+        continue;
+      }
+
       await prisma.finding.create({
         data: {
           analysisId: analysis.id,
           documentId,
-          sourceClauseId: finding.sourceClauseId,
+          sourceClauseId: resolvedClauseId,
           category: finding.category,
           severity: finding.severity,
           title: finding.title,
@@ -60,7 +77,7 @@ export class DocumentAnalysisService {
     }
 
     // Auto-generate Action Brief checklist items
-    await this.generateActionItems(documentId, userId, analysisResult);
+    await this.generateActionItems(documentId, userId, analysisResult, validClauseIds);
 
     // Mark document as ANALYZED
     await prisma.document.update({
@@ -80,7 +97,8 @@ export class DocumentAnalysisService {
   private async generateActionItems(
     documentId: string,
     userId: string,
-    analysis: AnalysisResult
+    analysis: AnalysisResult,
+    validClauseIds: Set<string>
   ) {
     const items: {
       category: string;
@@ -161,6 +179,10 @@ export class DocumentAnalysisService {
     }
 
     for (const item of items) {
+      const resolvedClauseId = item.sourceClauseId && validClauseIds.has(item.sourceClauseId)
+        ? item.sourceClauseId
+        : null;
+
       await prisma.actionItem.create({
         data: {
           documentId,
@@ -168,7 +190,7 @@ export class DocumentAnalysisService {
           category: item.category,
           title: item.title,
           description: item.description,
-          sourceClauseId: item.sourceClauseId,
+          sourceClauseId: resolvedClauseId,
           priority: item.priority,
           isCompleted: false
         }

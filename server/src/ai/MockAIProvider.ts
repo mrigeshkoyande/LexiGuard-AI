@@ -80,7 +80,8 @@ export class MockAIProvider implements AIProvider {
         whyItMatters: sanitizeSafetyOutput(whyItMatters),
         sourceClauseId: clause.id,
         pageNumber: clause.page || 1,
-        confidence: 0.95
+        confidence: 0.95,
+        supportStatus: 'SUPPORTED'
       });
     };
 
@@ -207,7 +208,8 @@ export class MockAIProvider implements AIProvider {
         whyItMatters: 'Establishes initial scope and mutual contractual intentions.',
         sourceClauseId: firstClause.id,
         pageNumber: firstClause.page || 1,
-        confidence: 0.9
+        confidence: 0.9,
+        supportStatus: 'SUPPORTED'
       });
     }
 
