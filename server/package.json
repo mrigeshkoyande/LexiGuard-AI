@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "npx cross-env DATABASE_URL=\"file:./dev.db\" prisma generate && npx cross-env DATABASE_URL=\"file:./dev.db\" prisma db push --accept-data-loss && npx cross-env DATABASE_URL=\"file:./dev.db\" tsx prisma/seed.ts && tsc",
+    "build": "npx cross-env DATABASE_URL=\"file:./dev.db\" prisma generate && (npx cross-env DATABASE_URL=\"file:./dev.db\" prisma db push --accept-data-loss || true) && (npx cross-env DATABASE_URL=\"file:./dev.db\" tsx prisma/seed.ts || true) && tsc",
     "start": "node dist/index.js",
     "test": "vitest run --fileParallelism=false",
     "typecheck": "tsc --noEmit",

@@ -7,8 +7,8 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Install build essentials for native binaries
-RUN apk add --no-cache python3 make g++
+# Install build essentials and OpenSSL for Prisma on Alpine Linux
+RUN apk add --no-cache python3 make g++ openssl libc6-compat
 
 # Copy root workspace configurations
 COPY package.json package-lock.json ./
@@ -41,8 +41,8 @@ FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Install curl for Docker healthchecks & openssl for Prisma
-RUN apk add --no-cache curl openssl
+# Install curl for Docker healthchecks & openssl + libc6-compat for Prisma
+RUN apk add --no-cache curl openssl libc6-compat
 
 ENV NODE_ENV=production
 ENV PORT=5000
