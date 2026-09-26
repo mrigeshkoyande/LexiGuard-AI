@@ -6,7 +6,7 @@ import {
   Clock,
   Briefcase
 } from 'lucide-react';
-import { AnalysisResult, DocumentClause } from '@lexiguard/shared';
+import { AnalysisResult, DocumentClause, FindingItem, DocumentSection } from '@lexiguard/shared';
 import { api } from '../services/api';
 import { DocumentViewer } from '../components/DocumentViewer';
 import { InsightsPanel } from '../components/InsightsPanel';
@@ -20,7 +20,7 @@ interface WorkspacePageProps {
 }
 
 export const WorkspacePage: React.FC<WorkspacePageProps> = ({ documentId, onNavigate }) => {
-  const [documentData, setDocumentData] = useState<any>(null);
+  const [documentData, setDocumentData] = useState<unknown>(null);
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [highlightedClauseId, setHighlightedClauseId] = useState<string | null>(null);
   const [selectedDrawerClause, setSelectedDrawerClause] = useState<DocumentClause | null>(null);
@@ -37,18 +37,18 @@ export const WorkspacePage: React.FC<WorkspacePageProps> = ({ documentId, onNavi
 
         if (res.document.analysis) {
           const dbFindings = res.document.analysis.findings || [];
-          const missingInfo = JSON.parse(res.document.analysis.missingInfoJson || '[]');
+          const missingInfo = JSON.parse((res.document.analysis as { missingInfoJson?: string }).missingInfoJson || '[]');
 
           const structuredAnalysis: AnalysisResult = {
-            summary: res.document.analysis.summary,
-            documentType: res.document.analysis.documentType,
-            importantClauses: dbFindings.filter((f: any) => f.category === 'importantClauses'),
-            obligations: dbFindings.filter((f: any) => f.category === 'obligations'),
-            deadlines: dbFindings.filter((f: any) => f.category === 'deadlines'),
-            monetaryTerms: dbFindings.filter((f: any) => f.category === 'monetaryTerms'),
-            terminationTerms: dbFindings.filter((f: any) => f.category === 'terminationTerms'),
-            renewalTerms: dbFindings.filter((f: any) => f.category === 'renewalTerms'),
-            potentialConcerns: dbFindings.filter((f: any) => f.category === 'potentialConcerns'),
+            summary: (res.document.analysis as { summary: string }).summary,
+            documentType: (res.document.analysis as { documentType: string }).documentType,
+            importantClauses: dbFindings.filter((f: { category: string }) => f.category === 'importantClauses') as unknown as FindingItem[],
+            obligations: dbFindings.filter((f: { category: string }) => f.category === 'obligations') as unknown as FindingItem[],
+            deadlines: dbFindings.filter((f: { category: string }) => f.category === 'deadlines') as unknown as FindingItem[],
+            monetaryTerms: dbFindings.filter((f: { category: string }) => f.category === 'monetaryTerms') as unknown as FindingItem[],
+            terminationTerms: dbFindings.filter((f: { category: string }) => f.category === 'terminationTerms') as unknown as FindingItem[],
+            renewalTerms: dbFindings.filter((f: { category: string }) => f.category === 'renewalTerms') as unknown as FindingItem[],
+            potentialConcerns: dbFindings.filter((f: { category: string }) => f.category === 'potentialConcerns') as unknown as FindingItem[],
             missingInformation: missingInfo
           };
           setAnalysis(structuredAnalysis);
@@ -67,8 +67,8 @@ export const WorkspacePage: React.FC<WorkspacePageProps> = ({ documentId, onNavi
       setReanalyzing(true);
       const res = await api.reanalyzeDocument(documentId);
       setAnalysis(res.analysis);
-    } catch (err: any) {
-      alert(`Reanalysis failed: ${err.message}`);
+    } catch (err: unknown) {
+      alert(`Reanalysis failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setReanalyzing(false);
     }
@@ -124,10 +124,10 @@ export const WorkspacePage: React.FC<WorkspacePageProps> = ({ documentId, onNavi
           </button>
           <div className="min-w-0">
             <h1 className="font-headline text-lg font-light text-brand-warmwhite truncate max-w-md">
-              {documentData.title}
+              {(documentData as { title: string }).title}
             </h1>
             <p className="text-[11px] text-brand-sand/70 font-mono">
-              {documentData.documentType || 'Legal Agreement'} • {documentData.sections?.length || 0} Sections • 100% Traceable
+              {(documentData as { documentType?: string }).documentType || 'Legal Agreement'} • {(documentData as { sections?: unknown[] }).sections?.length || 0} Sections • 100% Traceable
             </p>
           </div>
         </div>
@@ -180,8 +180,8 @@ export const WorkspacePage: React.FC<WorkspacePageProps> = ({ documentId, onNavi
         {/* Left: Document Clauses Viewer (7 cols = ~58%) */}
         <div className="lg:col-span-7 h-full min-h-0">
           <DocumentViewer
-            title={documentData.title}
-            sections={documentData.sections || []}
+            title={(documentData as { title: string }).title}
+            sections={(documentData as { sections: (DocumentSection & { clauses: DocumentClause[] })[] }).sections || []}
             highlightedClauseId={highlightedClauseId}
             onSelectClause={handleSelectClause}
             onOpenClauseDrawer={handleOpenClauseDrawer}

@@ -29,7 +29,7 @@ export function authenticate(req: AuthenticatedRequest, res: Response, next: Nex
     const payload = authService.verifyToken(token);
     req.user = { id: payload.userId };
     next();
-  } catch (err: any) {
+  } catch (err: unknown) {
     return res.status(401).json({
       error: 'Invalid or expired authentication token.'
     });

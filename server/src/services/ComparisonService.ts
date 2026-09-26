@@ -1,4 +1,5 @@
 import prisma from '../db/prisma';
+import { AppError } from '../utils/AppError';
 import { ComparisonResult, DocumentStructure } from '@lexiguard/shared';
 import { DocumentService } from './DocumentService';
 import { getAIProvider } from '../ai';
@@ -68,9 +69,7 @@ export class ComparisonService {
     }
 
     if (comp.userId !== userId) {
-      const err: any = new Error('Unauthorized');
-      err.statusCode = 403;
-      throw err;
+      throw new AppError('Unauthorized', 403);
     }
 
     const docA = await prisma.document.findUnique({ where: { id: comp.docAId } });

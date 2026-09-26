@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import prisma from '../db/prisma';
+import { AppError } from '../utils/AppError';
 import { UserProfile } from '@lexiguard/shared';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'lexiguard_dev_secret_key_change_in_production_32_chars_min';
@@ -29,21 +30,15 @@ export class AuthService {
     const name = params.name.trim();
 
     if (!email || !email.includes('@')) {
-      const err: any = new Error('Valid email address is required.');
-      err.statusCode = 400;
-      throw err;
+      throw new AppError('Valid email address is required.', 400);
     }
 
     if (!params.password || params.password.length < 6) {
-      const err: any = new Error('Password must be at least 6 characters long.');
-      err.statusCode = 400;
-      throw err;
+      throw new AppError('Password must be at least 6 characters long.', 400);
     }
 
     if (!name) {
-      const err: any = new Error('Name is required.');
-      err.statusCode = 400;
-      throw err;
+      throw new AppError('Name is required.', 400);
     }
 
     const existing = await prisma.user.findUnique({
@@ -51,9 +46,7 @@ export class AuthService {
     });
 
     if (existing) {
-      const err: any = new Error('An account with this email already exists.');
-      err.statusCode = 409;
-      throw err;
+      throw new AppError('An account with this email already exists.', 409);
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -91,16 +84,12 @@ export class AuthService {
     });
 
     if (!user) {
-      const err: any = new Error('Invalid email or password.');
-      err.statusCode = 401;
-      throw err;
+      throw new AppError('Invalid email or password.', 401);
     }
 
     const valid = await bcrypt.compare(params.password, user.passwordHash);
     if (!valid) {
-      const err: any = new Error('Invalid email or password.');
-      err.statusCode = 401;
-      throw err;
+      throw new AppError('Invalid email or password.', 401);
     }
 
     const token = this.generateToken(user.id);
@@ -125,9 +114,7 @@ export class AuthService {
     });
 
     if (!user) {
-      const err: any = new Error('User not found.');
-      err.statusCode = 404;
-      throw err;
+      throw new AppError('User not found.', 404);
     }
 
     return {

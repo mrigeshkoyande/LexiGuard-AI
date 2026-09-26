@@ -59,8 +59,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate, onOpen
       setDeletingId(docId);
       await api.deleteDocument(docId);
       setDocuments((prev) => prev.filter((d) => d.id !== docId));
-    } catch (err: any) {
-      alert(`Delete failed: ${err.message}`);
+    } catch (err: unknown) {
+      alert(`Delete failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setDeletingId(null);
     }
@@ -227,7 +227,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate, onOpen
                         </div>
 
                         <div className="flex items-center gap-1">
-                          <Badge variant="status" status={doc.status as any}>
+                          <Badge variant="status" status={(doc.status === 'ERROR' || doc.status === 'ANALYZED' || doc.status === 'PENDING') ? doc.status : 'PENDING'}>
                             {doc.status}
                           </Badge>
                           <button

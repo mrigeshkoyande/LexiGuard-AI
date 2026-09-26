@@ -1,4 +1,5 @@
 import prisma from '../db/prisma';
+import { AppError } from '../utils/AppError';
 import { ActionBrief, ActionItemRecord } from '@lexiguard/shared';
 import { DocumentService } from './DocumentService';
 
@@ -20,19 +21,19 @@ export class ActionBriefService {
       orderBy: [{ priority: 'asc' }, { createdAt: 'asc' }]
     });
 
-    const completedCount = items.filter((i: any) => i.isCompleted).length;
+    const completedCount = items.filter((i) => i.isCompleted).length;
     const summary = `${completedCount} of ${items.length} pre-signing action items completed.`;
 
-    const mappedItems: ActionItemRecord[] = items.map((i: any) => ({
+    const mappedItems: ActionItemRecord[] = items.map((i) => ({
       id: i.id,
       documentId: i.documentId,
       userId: i.userId,
-      category: i.category as any,
+      category: i.category as 'Document Overview' | 'Important Obligations' | 'Important Dates' | 'Financial Terms' | 'Review Areas' | 'Questions to Consider' | 'Questions for a Lawyer',
       title: i.title,
       description: i.description,
       isCompleted: i.isCompleted,
       sourceClauseId: i.sourceClauseId,
-      priority: i.priority as any,
+      priority: i.priority as 'High' | 'Medium' | 'Low',
       createdAt: i.createdAt.toISOString()
     }));
 
@@ -57,9 +58,7 @@ export class ActionBriefService {
     }
 
     if (item.userId !== userId) {
-      const err: any = new Error('Unauthorized');
-      err.statusCode = 403;
-      throw err;
+      throw new AppError('Unauthorized', 403);
     }
 
     const updated = await prisma.actionItem.update({
@@ -71,12 +70,12 @@ export class ActionBriefService {
       id: updated.id,
       documentId: updated.documentId,
       userId: updated.userId,
-      category: updated.category as any,
+      category: updated.category as 'Document Overview' | 'Important Obligations' | 'Important Dates' | 'Financial Terms' | 'Review Areas' | 'Questions to Consider' | 'Questions for a Lawyer',
       title: updated.title,
       description: updated.description,
       isCompleted: updated.isCompleted,
       sourceClauseId: updated.sourceClauseId,
-      priority: updated.priority as any,
+      priority: updated.priority as 'High' | 'Medium' | 'Low',
       createdAt: updated.createdAt.toISOString()
     };
   }

@@ -55,12 +55,12 @@ export const AskLexiDock: React.FC<AskLexiDockProps> = ({ documentId, onSelectCl
     try {
       const response = await api.askQuestion(documentId, text);
       setMessages((prev) => [...prev, response]);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setMessages((prev) => [
         ...prev,
         {
           question: text,
-          answer: `Error: ${err.message || 'Failed to process question'}`,
+          answer: `Error: ${err instanceof Error ? err.message : 'Failed to process question'}`,
           status: 'INSUFFICIENT_EVIDENCE',
           supportStatus: 'INSUFFICIENT_EVIDENCE',
           sources: [],

@@ -163,7 +163,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
               ].map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveFilter(tab.id as any)}
+                  onClick={() => setActiveFilter(tab.id as 'all' | 'warning' | 'disclaimer' | 'deadline')}
                   aria-pressed={activeFilter === tab.id}
                   className={`px-2.5 py-1 rounded-lg font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${
                     activeFilter === tab.id

@@ -67,9 +67,9 @@ export function validateAndSaveUploadedFile(req: Request, res: Response, next: N
   try {
     fs.writeFileSync(diskPath, buffer);
     // Attach saved path to req.file
-    (req.file as any).path = diskPath;
+    (req.file as Express.Multer.File & { path?: string }).path = diskPath;
     next();
-  } catch (err: any) {
-    return res.status(500).json({ error: `Failed to store uploaded file: ${err.message}` });
+  } catch (err: unknown) {
+    return res.status(500).json({ error: `Failed to store uploaded file: ${err instanceof Error ? err.message : 'Unknown error'}` });
   }
 }

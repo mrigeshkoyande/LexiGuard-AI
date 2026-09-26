@@ -36,7 +36,7 @@ export class DocumentAnalysisService {
       where: { documentId },
       select: { id: true }
     });
-    const validClauseIds = new Set<string>(dbClauses.map((c: any) => c.id));
+    const validClauseIds = new Set<string>(dbClauses.map((c) => c.id));
     const firstClauseId = dbClauses[0]?.id;
 
     // Map all findings to DB

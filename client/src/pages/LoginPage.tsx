@@ -22,8 +22,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
     try {
       await login(email, password);
       onNavigate('dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Invalid email or password.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Invalid email or password.');
     } finally {
       setLoading(false);
     }
@@ -35,8 +35,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
     try {
       await demoLogin();
       onNavigate('dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Demo login failed.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Demo login failed.');
     } finally {
       setLoading(false);
     }

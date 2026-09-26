@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, Download, ArrowUpRight, Search, ChevronRight } from 'lucide-react';
+import { DocumentSummary } from '@lexiguard/shared';
 import { api } from '../services/api';
 import { Button } from '../components/ui/Button';
 
@@ -33,9 +34,9 @@ export const DeadlinesPage: React.FC<DeadlinesPageProps> = ({ onNavigate }) => {
       const docs = res.documents || [];
       const extracted: DeadlineItem[] = [];
 
-      docs.forEach((doc: any, docIdx: number) => {
+      docs.forEach((doc: DocumentSummary & { analysis?: { timeline?: Array<{ event?: string, title?: string, date?: string, type?: string, clauseId?: string, actionRequired?: string }>, clauses?: Array<{ id: string }> } }, docIdx: number) => {
         if (doc.analysis?.timeline) {
-          doc.analysis.timeline.forEach((item: any, idx: number) => {
+          doc.analysis.timeline.forEach((item: { event?: string, title?: string, date?: string, type?: string, clauseId?: string, actionRequired?: string }, idx: number) => {
             const daysRemaining = 15 + ((docIdx * 17 + idx * 23) % 90);
             extracted.push({
               id: `${doc.id}-tl-${idx}`,
@@ -44,9 +45,9 @@ export const DeadlinesPage: React.FC<DeadlinesPageProps> = ({ onNavigate }) => {
               title: item.event || item.title || 'Contractual Milestone',
               date: item.date || `In ${daysRemaining} days`,
               daysRemaining,
-              type: (item.type as any) || (daysRemaining < 30 ? 'Notice' : 'Renewal'),
+              type: (item.type as 'Notice' | 'Renewal' | 'Compliance') || (daysRemaining < 30 ? 'Notice' : 'Renewal'),
               severity: daysRemaining < 20 ? 'high' : daysRemaining < 45 ? 'medium' : 'low',
-              sourceClauseId: item.clauseId || (doc.analysis.clauses?.[idx]?.id),
+              sourceClauseId: item.clauseId || (doc.analysis?.clauses?.[idx]?.id),
               actionRequired: item.actionRequired || 'Review clause stipulations and notify stakeholders before cutoff window.'
             });
           });

@@ -57,7 +57,7 @@ export const ActionBriefPage: React.FC<ActionBriefPageProps> = ({ documentId, on
 
     try {
       await api.toggleActionItem(documentId, item.id, nextState);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to update action item state', err);
       // Revert if error
       setBrief((prev) => {

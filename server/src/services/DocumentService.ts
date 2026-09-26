@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import prisma from '../db/prisma';
+import { AppError } from '../utils/AppError';
 import { DocumentStructure, DocumentSummary } from '@lexiguard/shared';
 import { DocumentExtractionService } from './DocumentExtractionService';
 import { DocumentAnalysisService } from './DocumentAnalysisService';
@@ -29,7 +30,7 @@ export class DocumentService {
       orderBy: { createdAt: 'desc' }
     });
 
-    return docs.map((doc: any) => ({
+    return docs.map((doc) => ({
       id: doc.id,
       userId: doc.userId,
       title: doc.title,
@@ -37,7 +38,7 @@ export class DocumentService {
       mimeType: doc.mimeType,
       fileSize: doc.fileSize,
       pageCount: doc.pageCount,
-      status: doc.status as any,
+      status: doc.status as 'PENDING' | 'PROCESSING' | 'ANALYZED' | 'ERROR',
       errorMessage: doc.errorMessage,
       createdAt: doc.createdAt.toISOString(),
       updatedAt: doc.updatedAt.toISOString(),
@@ -73,15 +74,11 @@ export class DocumentService {
     });
 
     if (!doc) {
-      const err: any = new Error('Document not found');
-      err.statusCode = 404;
-      throw err;
+      throw new AppError('Document not found', 404);
     }
 
     if (doc.userId !== userId) {
-      const err: any = new Error('Unauthorized: You do not have permission to access this document.');
-      err.statusCode = 403;
-      throw err;
+      throw new AppError('Unauthorized: You do not have permission to access this document.', 403);
     }
 
     return doc;
@@ -159,12 +156,12 @@ export class DocumentService {
       await this.analysisService.analyzeAndSave(doc.id, params.userId, structuredDoc);
 
       return await this.getDocumentById(doc.id, params.userId);
-    } catch (err: any) {
+    } catch (err: unknown) {
       await prisma.document.update({
         where: { id: doc.id },
         data: {
           status: 'ERROR',
-          errorMessage: err.message
+          errorMessage: err instanceof Error ? err.message : 'Unknown error'
         }
       });
       throw err;
@@ -178,10 +175,10 @@ export class DocumentService {
     const doc = await this.getDocumentById(documentId, userId);
 
     return {
-      sections: doc.sections.map((sec: any) => ({
+      sections: doc.sections.map((sec) => ({
         id: sec.id,
         title: sec.title,
-        clauses: sec.clauses.map((c: any) => ({
+        clauses: sec.clauses.map((c) => ({
           id: c.id,
           number: c.number,
           title: c.title,

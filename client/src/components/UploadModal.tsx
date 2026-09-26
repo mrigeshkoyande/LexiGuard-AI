@@ -70,9 +70,9 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onSuc
         onSuccess(res.document.id);
         handleClose();
       }, 700);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setStage('error');
-      setErrorMessage(err.message || 'Upload failed. Please try again.');
+      setErrorMessage(err instanceof Error ? err.message : 'Upload failed. Please try again.');
     }
   };
 

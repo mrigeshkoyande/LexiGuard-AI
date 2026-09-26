@@ -46,7 +46,7 @@ export class RealAIProvider implements AIProvider {
       throw new Error(`AI Provider HTTP ${response.status}: ${errorText}`);
     }
 
-    const data = (await response.json()) as any;
+    const data = (await response.json()) as { choices?: Array<{ message?: { content?: string } }> };
     return data.choices?.[0]?.message?.content || '';
   }
 
@@ -141,8 +141,8 @@ export class RealAIProvider implements AIProvider {
 
       validated.data.summary = sanitizeSafetyOutput(validated.data.summary);
       return validated.data;
-    } catch (err: any) {
-      console.warn(`[RealAIProvider] Error during analysis, falling back to mock provider: ${err.message}`);
+    } catch (err: unknown) {
+      console.warn(`[RealAIProvider] Error during analysis, falling back to mock provider: ${err instanceof Error ? err.message : 'Unknown error'}`);
       return this.fallbackMock.analyzeDocument(doc);
     }
   }
@@ -222,10 +222,10 @@ export class RealAIProvider implements AIProvider {
       const parsed = JSON.parse(rawJson);
 
       const validClauseIds = new Set(contextClauses.map((c) => c.id));
-      const rawSources = Array.isArray(parsed.sources) ? parsed.sources : [];
+      const rawSources = Array.isArray(parsed.sources) ? parsed.sources as Array<{ sourceClauseId: string, page?: number, excerpt?: string }> : [];
       const verifiedSources = rawSources
-        .filter((s: any) => s && validClauseIds.has(s.sourceClauseId))
-        .map((s: any) => {
+        .filter((s) => s && validClauseIds.has(s.sourceClauseId))
+        .map((s) => {
           const matchingClause = contextClauses.find((c) => c.id === s.sourceClauseId);
           return {
             sourceClauseId: s.sourceClauseId,
@@ -238,12 +238,12 @@ export class RealAIProvider implements AIProvider {
 
       const rawStatus = (parsed.status || '').toUpperCase().replace(/\s+/g, '_');
       const status = ['SUPPORTED', 'PARTIALLY_SUPPORTED', 'INSUFFICIENT_EVIDENCE', 'CONTRADICTORY_EVIDENCE'].includes(rawStatus)
-        ? (rawStatus as any)
+        ? (rawStatus as 'SUPPORTED' | 'PARTIALLY_SUPPORTED' | 'INSUFFICIENT_EVIDENCE' | 'CONTRADICTORY_EVIDENCE')
         : verifiedSources.length > 0
         ? 'SUPPORTED'
         : 'INSUFFICIENT_EVIDENCE';
 
-      const sourceClauseIds = verifiedSources.map((s: any) => s.sourceClauseId);
+      const sourceClauseIds = verifiedSources.map((s) => s.sourceClauseId);
 
       return {
         answer: sanitizeSafetyOutput(parsed.answer || "I couldn't find enough information about this in the uploaded document."),
@@ -254,8 +254,8 @@ export class RealAIProvider implements AIProvider {
         limitation: parsed.limitation ? sanitizeSafetyOutput(parsed.limitation) : undefined,
         nextStep: parsed.nextStep ? sanitizeSafetyOutput(parsed.nextStep) : undefined
       };
-    } catch (err: any) {
-      console.warn(`[RealAIProvider] Error answering question, using fallback: ${err.message}`);
+    } catch (err: unknown) {
+      console.warn(`[RealAIProvider] Error answering question, using fallback: ${err instanceof Error ? err.message : 'Unknown error'}`);
       return this.fallbackMock.answerQuestion(question, contextClauses, allClauses);
     }
   }

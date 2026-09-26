@@ -58,8 +58,8 @@ export const ComparePage: React.FC<ComparePageProps> = ({ onNavigate }) => {
       setLoading(true);
       const res = await api.compareDocuments(docAId, docBId);
       setComparison(res);
-    } catch (err: any) {
-      setError(err.message || 'Comparison diffing failed.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Comparison diffing failed.');
     } finally {
       setLoading(false);
     }

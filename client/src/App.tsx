@@ -80,7 +80,6 @@ const AppContent: React.FC = () => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setCurrentView('dashboard');
       } else if (!user && !publicViews.includes(currentView)) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setCurrentView('landing');
       }
     }

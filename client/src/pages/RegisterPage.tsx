@@ -23,8 +23,8 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
     try {
       await register(email, password, name);
       onNavigate('dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Registration failed.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Registration failed.');
     } finally {
       setLoading(false);
     }

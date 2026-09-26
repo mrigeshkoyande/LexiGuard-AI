@@ -17,7 +17,7 @@ import { useTheme } from '../context/ThemeContext';
 
 interface NavbarProps {
   currentView?: string;
-  onNavigate?: (view: any, docId?: string) => void;
+  onNavigate?: (view: string, docId?: string) => void;
   onOpenUpload?: () => void;
   onOpenCommandPalette?: () => void;
   onOpenNotifications?: () => void;

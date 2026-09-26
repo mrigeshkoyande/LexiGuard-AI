@@ -87,7 +87,7 @@ export function validateFileOnDisk(filePath: string, originalFilename: string): 
   try {
     const buffer = fs.readFileSync(filePath);
     return validateFileMagicBytes(buffer, originalFilename);
-  } catch (err: any) {
-    return { valid: false, error: `Failed to read file for validation: ${err.message}` };
+  } catch (err: unknown) {
+    return { valid: false, error: `Failed to read file for validation: ${err instanceof Error ? err.message : 'Unknown error'}` };
   }
 }

@@ -93,11 +93,11 @@ class ApiClient {
   }
 
   async getDocument(id: string) {
-    return this.request<{ document: any }>(`/documents/${id}`);
+    return this.request<{ document: DocumentSummary & { analysis?: { findings?: Array<{ category: string, title: string, sourceClauseId: string, pageNumber: number, explanation: string, whyItMatters: string }>, summary?: string, timeline?: Array<{ event?: string, title?: string, date?: string, type?: string, clauseId?: string, actionRequired?: string }>, clauses?: Array<{ id: string }> }, sections?: unknown[] } }>(`/documents/${id}`);
   }
 
   async uploadDocument(formData: FormData) {
-    return this.request<{ message: string; document: any }>('/documents/upload', {
+    return this.request<{ message: string; document: DocumentSummary }>('/documents/upload', {
       method: 'POST',
       body: formData
     });

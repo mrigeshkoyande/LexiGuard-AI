@@ -1,4 +1,5 @@
 import prisma from '../db/prisma';
+import { AppError } from '../utils/AppError';
 import { DocumentClause, QuestionResponse, QuestionSource, SupportStatus } from '@lexiguard/shared';
 import { scoreClausesForQuery } from '../utils/relevance';
 import { DECLINED_ADVICE_RESPONSE, isAdviceSeekingQuestion, sanitizeSafetyOutput } from '../utils/safety';
@@ -33,15 +34,11 @@ export class QuestionAnsweringService {
     });
 
     if (!document) {
-      const err: any = new Error('Document not found');
-      err.statusCode = 404;
-      throw err;
+      throw new AppError('Document not found', 404);
     }
 
     if (document.userId !== userId) {
-      const err: any = new Error('Unauthorized: You do not have permission to access this document.');
-      err.statusCode = 403;
-      throw err;
+      throw new AppError('Unauthorized: You do not have permission to access this document.', 403);
     }
 
     // 2. Question Classification & Safety Refusal
@@ -81,7 +78,7 @@ export class QuestionAnsweringService {
       orderBy: { createdAt: 'asc' }
     });
 
-    const clauses: DocumentClause[] = dbClauses.map((c: any) => ({
+    const clauses: DocumentClause[] = dbClauses.map((c) => ({
       id: c.id,
       number: c.number,
       title: c.title,
@@ -126,7 +123,7 @@ export class QuestionAnsweringService {
     const sectionMatch = trimmedQuestion.match(/(?:section|clause|article)\s+([0-9a-zA-Z\.\-]+)/i);
     if (sectionMatch) {
       const requestedSection = sectionMatch[1].toLowerCase().replace(/[^a-z0-9]/g, '');
-      const sectionExists = clauses.some((c: any) => {
+      const sectionExists = clauses.some((c) => {
         const numNorm = c.number.toLowerCase().replace(/[^a-z0-9]/g, '');
         const titleNorm = c.title.toLowerCase();
         return numNorm === requestedSection || titleNorm.includes(`section ${requestedSection}`) || titleNorm.includes(`clause ${requestedSection}`);
@@ -309,7 +306,7 @@ export class QuestionAnsweringService {
       orderBy: { createdAt: 'desc' }
     });
 
-    return history.map((h: any) => {
+    return history.map((h) => {
       const sourceIds: string[] = JSON.parse(h.sourceClauseIdsJson || '[]');
       const isAbstaining = h.answerText.toLowerCase().includes("couldn't find") || h.isDeclinedAdvice;
       const supportStatus: SupportStatus = isAbstaining

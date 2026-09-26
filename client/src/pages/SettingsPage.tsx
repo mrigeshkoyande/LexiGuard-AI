@@ -70,7 +70,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = () => {
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id as 'ai' | 'security' | 'general' | 'notifications')}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 ${
                   active
                     ? 'bg-lexi-gold/15 text-lexi-gold border border-lexi-gold/40'

@@ -55,8 +55,8 @@ export const DocumentLibraryPage: React.FC<DocumentLibraryPageProps> = ({ onNavi
       setDeletingId(docId);
       await api.deleteDocument(docId);
       setDocuments((prev) => prev.filter((d) => d.id !== docId));
-    } catch (err: any) {
-      alert(`Delete failed: ${err.message}`);
+    } catch (err: unknown) {
+      alert(`Delete failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setDeletingId(null);
     }
@@ -191,7 +191,7 @@ export const DocumentLibraryPage: React.FC<DocumentLibraryPageProps> = ({ onNavi
                   <div className="p-2 rounded-lg bg-brand-navy text-brand-gold border border-brand-gold/25">
                     <FileText className="w-5 h-5" />
                   </div>
-                  <Badge variant="status" status={doc.status as any}>{doc.status}</Badge>
+                  <Badge variant="status" status={(doc.status === 'ERROR' || doc.status === 'ANALYZED' || doc.status === 'PENDING') ? doc.status : 'PENDING'}>{doc.status}</Badge>
                 </div>
                 <h3 className="text-sm font-semibold text-brand-warmwhite group-hover:text-brand-gold-light transition-colors line-clamp-1">
                   {doc.title}
@@ -253,7 +253,7 @@ export const DocumentLibraryPage: React.FC<DocumentLibraryPageProps> = ({ onNavi
                   <td className="p-4 font-mono">{doc.pageCount}</td>
                   <td className="p-4 font-mono text-brand-gold">{doc.findingCount || 0}</td>
                   <td className="p-4">
-                    <Badge variant="status" status={doc.status as any}>{doc.status}</Badge>
+                    <Badge variant="status" status={(doc.status === 'ERROR' || doc.status === 'ANALYZED' || doc.status === 'PENDING') ? doc.status : 'PENDING'}>{doc.status}</Badge>
                   </td>
                   <td className="p-4 text-right">
                     <button

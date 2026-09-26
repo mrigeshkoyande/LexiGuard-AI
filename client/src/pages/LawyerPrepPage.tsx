@@ -18,7 +18,7 @@ interface LawyerPrepPageProps {
 }
 
 export const LawyerPrepPage: React.FC<LawyerPrepPageProps> = ({ documentId, onNavigate }) => {
-  const [docData, setDocData] = useState<any>(null);
+  const [docData, setDocData] = useState<{ title?: string, pageCount?: number, documentType?: string, analysis?: { summary?: string, findings?: Array<{ category: string, title: string, sourceClauseId: string, pageNumber: number, explanation: string, whyItMatters: string }> } } | null>(null);
   const [loading, setLoading] = useState(true);
   const [customNotes, setCustomNotes] = useState('');
 
@@ -27,7 +27,7 @@ export const LawyerPrepPage: React.FC<LawyerPrepPageProps> = ({ documentId, onNa
       try {
         setLoading(true);
         const res = await api.getDocument(documentId);
-        setDocData(res.document);
+        setDocData(res.document as { title?: string, pageCount?: number, documentType?: string, analysis?: { summary?: string, findings?: Array<{ category: string, title: string, sourceClauseId: string, pageNumber: number, explanation: string, whyItMatters: string }> } });
       } catch (err) {
         console.error('Failed to load doc for lawyer prep', err);
       } finally {
@@ -64,8 +64,8 @@ export const LawyerPrepPage: React.FC<LawyerPrepPageProps> = ({ documentId, onNa
   }
 
   const findings = docData.analysis?.findings || [];
-  const reviewAreas = findings.filter((f: any) => f.category === 'potentialConcerns');
-  const deadlines = findings.filter((f: any) => f.category === 'deadlines');
+  const reviewAreas = findings.filter((f: { category: string }) => f.category === 'potentialConcerns');
+  const deadlines = findings.filter((f: { category: string }) => f.category === 'deadlines');
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -135,7 +135,7 @@ export const LawyerPrepPage: React.FC<LawyerPrepPageProps> = ({ documentId, onNa
             {reviewAreas.length === 0 ? (
               <p className="text-xs text-brand-sand/60 italic">No high-risk clauses flagged.</p>
             ) : (
-              reviewAreas.map((item: any, idx: number) => (
+              reviewAreas.map((item, idx: number) => (
                 <div key={idx} className="p-4 rounded-xl bg-brand-midnight border border-brand-gold/20 space-y-1">
                   <div className="flex justify-between items-center">
                     <h4 className="text-xs font-semibold text-brand-warmwhite">{item.title}</h4>
@@ -158,7 +158,7 @@ export const LawyerPrepPage: React.FC<LawyerPrepPageProps> = ({ documentId, onNa
             <span>2. Time-Sensitive Windows & Notice Deadlines</span>
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {deadlines.map((item: any, idx: number) => (
+            {deadlines.map((item, idx: number) => (
               <div key={idx} className="p-3.5 rounded-xl bg-brand-midnight border border-brand-gold/20 space-y-1">
                 <h5 className="text-xs font-semibold text-brand-warmwhite">{item.title}</h5>
                 <p className="text-[11px] text-brand-sand/80">{item.explanation}</p>
